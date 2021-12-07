@@ -4,10 +4,14 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.EventExecutor;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 
 import java.io.File;
 import java.io.IOException;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
@@ -59,50 +63,69 @@ class Athlete implements Listener, EventExecutor, Runnable {
     );
   }
 
+  private void reportStart() {
+    String message = "Athlete %s heard signal [%s %s], start running %s";
+    message = String.format(message,
+      this.name,
+      this.eventClass.getName(), this.eventPriority.name(),
+      this.execPath
+    );
+    this.plugin.getLogger().info(message);
+  }
+
+  private void reportEnd(int exitCode){
+    String message = "Runner %s on %s finished %s with exit code of %d (seems %s)";
+    message = String.format(message,
+      this.name,
+      this.eventClass.getName() , this.execPath,
+      exitCode, exitCode == 0 ? "okay" : "failed"
+    );
+    this.plugin.getLogger().info(message);
+  }
+
+  private List<String> prepCmdline() {
+    Stream.Builder<String> preamble = Stream.builder();
+
+    preamble.add(this.execPath);
+    if(this.announce) {
+      preamble.add(this.eventClass.getName());
+    }
+
+    return Stream.concat(preamble.build(), this.args.stream()).toList();
+  }
+
   @Override
   public void run() {
-    {
-      String message = "Athlete %s heard signal [%s %s], start running %s";
-      message = String.format(message,
-        this.name,
-        this.eventClass.getName(), this.eventPriority.name(),
-        this.execPath
-      );
-      this.plugin.getLogger().info(message);
-    }
+    this.reportStart();
 
-    ProcessBuilder buildah = new ProcessBuilder();
-
-    {
-      Stream.Builder<String> preamble = Stream.builder();
-      preamble.add(this.execPath);
-      if(this.announce) {
-        preamble.add(this.eventClass.getName());
-      }
-      buildah.command(Stream.concat(preamble.build(), this.args.stream()).toList());
-    }
+    ProcessBuilder buildur = new ProcessBuilder();
+    buildur.command(this.prepCmdline());
 
     if(this.workDir != null) {
-      buildah.directory(this.workDir);
+      buildur.directory(this.workDir);
     }
 
     int exitCode = -1;
+
     try {
-      exitCode = this.getExitCode(buildah.start()); // Fuck you Java
+      Process proc = buildur.start();
+
+      Referee chief = new Referee(this.plugin, this.name, Level.INFO, proc.getInputStream());
+      Referee side = new Referee(this.plugin, this.name, Level.SEVERE, proc.getErrorStream());
+
+      Thread stdout = new Thread(chief);
+      Thread stderr = new Thread(side);
+
+      stdout.start();
+      stderr.start();
+
+      exitCode = this.getExitCode(proc); // Fuck you Java
     } catch (IOException e) {
       e.printStackTrace();
       this.plugin.getLogger().severe("Unable to run process");
     }
 
-    {
-      String message = "Runner %s on %s finished %s with exit code of %d (seems %s)";
-      message = String.format(message,
-        this.name,
-        this.eventClass.getName() , this.execPath,
-        exitCode, exitCode == 0 ? "okay" : "failed"
-      );
-      this.plugin.getLogger().info(message);
-    }
+    this.reportEnd(exitCode);
   }
 
   // Why this should ever happen? Fucking filthy
