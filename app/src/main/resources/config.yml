@@ -13,19 +13,3 @@ events:
       args:
         - am
         - i
-
-# Try new
-
-runners:
-  webhook:
-    executable: "who"
-    args:
-      - am
-      - i
-
-events2:
-  load:
-    event: org.bukkit.event.server.ServerLoadEvent # Fully Qualified Class Name of Event
-    priority: MONITOR # org.bukkit.event.EventPriority.*
-    runners:
-      - webhook

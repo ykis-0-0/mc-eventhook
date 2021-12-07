@@ -9,11 +9,13 @@ import java.io.File;
 import java.io.IOException;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 
-import org.bukkit.plugin.EventExecutor;
+import java.util.List;
+import java.util.ArrayList;
 
+import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.command.UnknownCommandEvent;
 
 import org.bukkit.plugin.java.annotation.plugin.*;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
@@ -57,6 +59,65 @@ public class PluginMain extends JavaPlugin {
     return permissible;
   }
 
+  private Athlete[] createRunnersEx() {
+    if(!this.getConfig().isConfigurationSection("events")) {
+      this.getLogger().severe("In config.yml[events]: Type mismatch, Map expected");
+    }
+
+    ConfigurationSection eventSection = this.getConfig().getConfigurationSection("events");
+    ArrayList<Athlete> runners = new ArrayList<>();
+
+    for(String atheleteId : eventSection.getKeys(false)) {
+      ConfigurationSection data = eventSection.getConfigurationSection(atheleteId);
+
+      final String eventFQCN = data.getString("event");
+      final String priorityName = data.getString("priority");
+      final String execPath = data.getString("run.executable");
+      final List<String> args = data.getStringList("run.args");
+
+      Class<? extends Event> eventClass = null;
+      {
+        final Class<?> classInput;
+        String message = null;
+        try {
+          classInput = Class.forName(eventFQCN);
+          eventClass = classInput.asSubclass(Event.class);
+        } catch (ClassNotFoundException e) {
+          message = String.format("In config.yml[events.%s]: Class not found: [%s]", atheleteId, eventFQCN);
+        } catch (ClassCastException e) {
+          message = String.format("In config.yml[events.%s]: Class [%s] is not (subclass of) [%s]",atheleteId, eventFQCN, Event.class.getName());
+        } finally {
+          if(message != null) {
+            this.getLogger().severe(message);
+            this.getLogger().warning("Entry skipped");
+            continue;
+          }
+        }
+      }
+
+      final EventPriority priority;
+      try {
+        priority = EventPriority.valueOf(priorityName);
+      } catch (IllegalArgumentException e) {
+        this.getLogger().severe(String.format("In config.yml[events.%s]: [%s] is not a valid EventPriority", atheleteId, priorityName));
+        this.getLogger().warning("Entry Skipped");
+        continue;
+      }
+
+      if(execPath == null) {
+        String message = "In config.yml[events.%s]: Executable not specified";
+        message = String.format(message, atheleteId, priority);
+        this.getLogger().severe(message);
+        this.getLogger().warning("Entry Skipped");
+        continue;
+      }
+
+      runners.add(new Athlete(this, atheleteId, eventClass, priority, execPath, args));
+    }
+
+    return runners.toArray(new Athlete[0]);
+  }
+
   @Override
   public void onEnable() {
     this.getLogger().info("Enabled!");
@@ -73,12 +134,12 @@ public class PluginMain extends JavaPlugin {
       return;
     }
 
-    Class<UnknownCommandEvent> evt = org.bukkit.event.command.UnknownCommandEvent.class;
-    PsuedoListener listener = new PsuedoListener();
-    EventPriority priority = EventPriority.MONITOR;
-    EventExecutor executor = new CustomExecutor(this.getLogger(), priority);
+    Athlete[] runners = this.createRunnersEx();
 
-    this.getServer().getPluginManager().registerEvent(evt, listener, priority, executor, this);
+    for(Athlete athelete : runners) {
+      athelete.onMyMark();
+    }
+    this.getLogger().info(String.format("%d runners parsed successfully.", runners.length));
   }
 
   @Override
