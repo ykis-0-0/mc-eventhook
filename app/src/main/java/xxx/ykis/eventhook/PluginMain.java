@@ -69,88 +69,29 @@ public class PluginMain extends JavaPlugin {
 
     for(String atheleteId : eventSection.getKeys(false)) {
       ConfigurationSection data = eventSection.getConfigurationSection(atheleteId);
+      ConfigSectionReader reader = new ConfigSectionReader(this, data, atheleteId);
 
-      final String eventFQCN = data.getString("event.class");
-      final String priorityName = data.getString("event.priority");
+      final Class<? extends Event> eventClass;
+      final EventPriority eventPriority;
+      final String execPath;
+      final File workDir;
+      final boolean announce;
+      final List<String> execArgs;
 
-      //#region Event Classification
-      if(eventFQCN == null) {
-        String message = "In config.yml[events.%s]: Target Event not specified";
-        message = String.format(message, atheleteId);
-        this.getLogger().severe(message);
-        this.getLogger().warning("Entry Skipped");
-        continue;
-      }
-
-      Class<? extends Event> eventClass = null;
-      {
-        String message = null;
-        try {
-          final Class<?> classInput = Class.forName(eventFQCN);
-          eventClass = classInput.asSubclass(Event.class);
-        } catch (ClassNotFoundException e) {
-          message = String.format("In config.yml[events.%s]: Class not found: [%s]", atheleteId, eventFQCN);
-        } catch (ClassCastException e) {
-          message = String.format("In config.yml[events.%s]: Class [%s] is not (subclass of) [%s]",atheleteId, eventFQCN, Event.class.getName());
-        } finally {
-          if(message != null) {
-            this.getLogger().severe(message);
-            this.getLogger().warning("Entry skipped");
-            continue;
-          }
-        }
-      }
-
-      if(eventClass == null) {
-        String message = "In config.yml[events.%s]: Unable to retrieve class object: [%s]";
-        this.getLogger().severe(String.format(message, atheleteId, eventFQCN));
-        continue;
-      }
-
-
-      if(priorityName == null) {
-        String message = "In config.yml[events.%s]: Runner Priority not specified";
-        message = String.format(message, atheleteId);
-        this.getLogger().severe(message);
-        this.getLogger().warning("Entry Skipped");
-        continue;
-      }
-
-      final EventPriority priority;
       try {
-        priority = EventPriority.valueOf(priorityName);
-      } catch (IllegalArgumentException e) {
-        this.getLogger().severe(String.format("In config.yml[events.%s]: [%s] is not a valid EventPriority", atheleteId, priorityName));
-        this.getLogger().warning("Entry Skipped");
-        continue;
-      }
-      //#endregion
-
-      final String execPath = data.getString("run.exec");
-      final String workDirPath = data.getString("run.workdir");
-      final boolean announce = data.getBoolean("run.announce", false);
-      final List<String> args = data.getStringList("run.args");
-
-      //#region Task Classification
-      if(execPath == null) {
-        String message = "In config.yml[events.%s]: Executable not specified";
-        message = String.format(message, atheleteId);
-        this.getLogger().severe(message);
+        eventClass = reader.getEvent();
+        eventPriority = reader.getPriority();
+        execPath = reader.getExecPath();
+        workDir = reader.getWorkDir();
+        announce = reader.getAnnounce();
+        execArgs = reader.getArgs();
+      } catch (RuntimeException e) {
+        this.getLogger().severe(e.getMessage());
         this.getLogger().warning("Entry Skipped");
         continue;
       }
 
-      File workDir = workDirPath == null ? null : new File(workDirPath);
-      if(workDir != null && !workDir.isDirectory()) {
-        String message = "In config.yml[events.%s]: Working Directory [%s] specified but not a valid directory";
-        message = String.format(message, atheleteId, workDir);
-        this.getLogger().severe(message);
-        this.getLogger().warning("Ignoring this line");
-        workDir = null;
-      }
-      //#endregion
-
-      runners.add(new Athlete(this, eventClass, priority, execPath, workDir, announce, args));
+      runners.add(new Athlete(this, eventClass, eventPriority, execPath, workDir, announce, execArgs));
     }
 
     return runners.toArray(new Athlete[0]);
