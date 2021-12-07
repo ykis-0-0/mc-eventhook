@@ -18,20 +18,20 @@ import org.bukkit.plugin.PluginLoadOrder;
 @LogPrefix(value = "EventHook(Test)")
 @LoadOrder(PluginLoadOrder.STARTUP)
 public class PluginMain extends JavaPlugin {
-    @Override
-    public void onEnable() {
-        getLogger().info("Enabled!");
+  @Override
+  public void onEnable() {
+    getLogger().info("Enabled!");
 
-        Class<UnknownCommandEvent> evt = org.bukkit.event.command.UnknownCommandEvent.class;
-        PsuedoListener listener = new PsuedoListener();
-        EventPriority priority = EventPriority.MONITOR;
-        EventExecutor executor = new CustomExecutor(this.getLogger(), priority);
+    Class<UnknownCommandEvent> evt = org.bukkit.event.command.UnknownCommandEvent.class;
+    PsuedoListener listener = new PsuedoListener();
+    EventPriority priority = EventPriority.MONITOR;
+    EventExecutor executor = new CustomExecutor(this.getLogger(), priority);
 
-        this.getServer().getPluginManager().registerEvent(evt, listener, priority, executor, this);
-    }
+    this.getServer().getPluginManager().registerEvent(evt, listener, priority, executor, this);
+  }
 
-    @Override
-    public void onDisable() {
-        getLogger().info("Disabled!");
-    }
+  @Override
+  public void onDisable() {
+    getLogger().info("Disabled!");
+  }
 }
