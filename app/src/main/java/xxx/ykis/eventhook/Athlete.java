@@ -16,13 +16,13 @@ import org.bukkit.event.Listener;
 
 class Athlete implements Listener, EventExecutor, Runnable {
 
-  private Plugin plugin;
-  private Class<? extends Event> eventClass;
-  private EventPriority eventPriority;
-  private String execPath;
-  private boolean announce;
-  private List<String> args;
-  private File workDir;
+  private final Plugin plugin;
+  private final Class<? extends Event> eventClass;
+  private final EventPriority eventPriority;
+  private final String execPath;
+  private final boolean announce;
+  private final List<String> args;
+  private final File workDir;
 
 
   public Athlete(Plugin plugin, Class<? extends Event> eventClass, EventPriority eventPriority,
