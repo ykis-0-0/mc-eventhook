@@ -91,7 +91,7 @@ public class PluginMain extends JavaPlugin {
         continue;
       }
 
-      runners.add(new Athlete(this, eventClass, eventPriority, execPath, workDir, announce, execArgs));
+      runners.add(new Athlete(this, atheleteId, eventClass, eventPriority, execPath, workDir, announce, execArgs));
     }
 
     return runners.toArray(new Athlete[0]);

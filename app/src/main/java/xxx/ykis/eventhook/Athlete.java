@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 class Athlete implements Listener, EventExecutor, Runnable {
 
   private final Plugin plugin;
+  private final String name;
   private final Class<? extends Event> eventClass;
   private final EventPriority eventPriority;
   private final String execPath;
@@ -25,9 +26,10 @@ class Athlete implements Listener, EventExecutor, Runnable {
   private final File workDir;
 
 
-  public Athlete(Plugin plugin, Class<? extends Event> eventClass, EventPriority eventPriority,
+  public Athlete(Plugin plugin, String name, Class<? extends Event> eventClass, EventPriority eventPriority,
       String execPath, File workDir, boolean announce, List<String> args) {
     this.plugin = plugin;
+    this.name = name;
 
     this.eventClass = eventClass;
     this.eventPriority = eventPriority;
@@ -49,8 +51,9 @@ class Athlete implements Listener, EventExecutor, Runnable {
 
   @Override
   public String toString() {
-    String format = "Runner [%s %s] => \"%s\" (%s)";
+    String format = "Runner %s [%s %s] => \"%s\" (%s)";
     return String.format(format,
+      this.name,
       this.eventPriority.name(), this.eventClass.getName(),
       this.execPath, String.join("; " , this.args)
     );
@@ -59,8 +62,9 @@ class Athlete implements Listener, EventExecutor, Runnable {
   @Override
   public void run() {
     {
-      String message = "Athlete heard signal [%s %s], start running %s";
+      String message = "Athlete %s heard signal [%s %s], start running %s";
       message = String.format(message,
+        this.name,
         this.eventClass.getName(), this.eventPriority.name(),
         this.execPath
       );
@@ -91,8 +95,9 @@ class Athlete implements Listener, EventExecutor, Runnable {
     }
 
     {
-      String message = "Runner on %s finished %s with exit code of %d (seems %s)";
+      String message = "Runner %s on %s finished %s with exit code of %d (seems %s)";
       message = String.format(message,
+        this.name,
         this.eventClass.getName() , this.execPath,
         exitCode, exitCode == 0 ? "okay" : "failed"
       );
