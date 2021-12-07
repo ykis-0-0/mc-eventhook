@@ -1,0 +1,18 @@
+schema: # Do NOT change this section unless you know what you are doing!
+  epoch: 0
+  revision: 0
+
+events:
+  load: # User-defined id for an entry
+    event:
+      class: org.bukkit.event.server.ServerLoadEvent # Fully Qualified Class Name of Event
+      priority: MONITOR # org.bukkit.event.EventPriority.*
+    wants:
+      - Type # TODO
+    run:
+      exec: "start.sh"
+      workdir: /srv/minecraft/worlds
+      announce: true; # Omitted if false
+      args:
+        - am
+        - i

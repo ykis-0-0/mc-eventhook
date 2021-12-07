@@ -29,7 +29,7 @@ import org.bukkit.plugin.PluginLoadOrder;
 public class PluginMain extends JavaPlugin {
 
   private boolean checkConfSchema() {
-    YamlConfiguration configTemplate = YamlConfiguration.loadConfiguration(this.getTextResource("config.yml"));
+    YamlConfiguration configTemplate = YamlConfiguration.loadConfiguration(this.getTextResource("defaults.yml"));
     boolean permissible = true;
     boolean needSupplyDrop = false;
 
@@ -59,7 +59,7 @@ public class PluginMain extends JavaPlugin {
     return permissible;
   }
 
-  private Athlete[] createRunnersEx() {
+  private Athlete[] gatherAthletes() {
     if(!this.getConfig().isConfigurationSection("events")) {
       this.getLogger().severe("In config.yml[events]: Type mismatch, Map expected");
     }
@@ -70,17 +70,23 @@ public class PluginMain extends JavaPlugin {
     for(String atheleteId : eventSection.getKeys(false)) {
       ConfigurationSection data = eventSection.getConfigurationSection(atheleteId);
 
-      final String eventFQCN = data.getString("event");
-      final String priorityName = data.getString("priority");
-      final String execPath = data.getString("run.executable");
-      final List<String> args = data.getStringList("run.args");
+      final String eventFQCN = data.getString("event.class");
+      final String priorityName = data.getString("event.priority");
+
+      //#region Event Classification
+      if(eventFQCN == null) {
+        String message = "In config.yml[events.%s]: Target Event not specified";
+        message = String.format(message, atheleteId);
+        this.getLogger().severe(message);
+        this.getLogger().warning("Entry Skipped");
+        continue;
+      }
 
       Class<? extends Event> eventClass = null;
       {
-        final Class<?> classInput;
         String message = null;
         try {
-          classInput = Class.forName(eventFQCN);
+          final Class<?> classInput = Class.forName(eventFQCN);
           eventClass = classInput.asSubclass(Event.class);
         } catch (ClassNotFoundException e) {
           message = String.format("In config.yml[events.%s]: Class not found: [%s]", atheleteId, eventFQCN);
@@ -95,6 +101,21 @@ public class PluginMain extends JavaPlugin {
         }
       }
 
+      if(eventClass == null) {
+        String message = "In config.yml[events.%s]: Unable to retrieve class object: [%s]";
+        this.getLogger().severe(String.format(message, atheleteId, eventFQCN));
+        continue;
+      }
+
+
+      if(priorityName == null) {
+        String message = "In config.yml[events.%s]: Runner Priority not specified";
+        message = String.format(message, atheleteId);
+        this.getLogger().severe(message);
+        this.getLogger().warning("Entry Skipped");
+        continue;
+      }
+
       final EventPriority priority;
       try {
         priority = EventPriority.valueOf(priorityName);
@@ -103,16 +124,33 @@ public class PluginMain extends JavaPlugin {
         this.getLogger().warning("Entry Skipped");
         continue;
       }
+      //#endregion
 
+      final String execPath = data.getString("run.exec");
+      final String workDirPath = data.getString("run.workdir");
+      final boolean announce = data.getBoolean("run.announce", false);
+      final List<String> args = data.getStringList("run.args");
+
+      //#region Task Classification
       if(execPath == null) {
         String message = "In config.yml[events.%s]: Executable not specified";
-        message = String.format(message, atheleteId, priority);
+        message = String.format(message, atheleteId);
         this.getLogger().severe(message);
         this.getLogger().warning("Entry Skipped");
         continue;
       }
 
-      runners.add(new Athlete(this, atheleteId, eventClass, priority, execPath, args));
+      File workDir = workDirPath == null ? null : new File(workDirPath);
+      if(workDir != null && !workDir.isDirectory()) {
+        String message = "In config.yml[events.%s]: Working Directory [%s] specified but not a valid directory";
+        message = String.format(message, atheleteId, workDir);
+        this.getLogger().severe(message);
+        this.getLogger().warning("Ignoring this line");
+        workDir = null;
+      }
+      //#endregion
+
+      runners.add(new Athlete(this, eventClass, priority, execPath, workDir, announce, args));
     }
 
     return runners.toArray(new Athlete[0]);
@@ -134,7 +172,7 @@ public class PluginMain extends JavaPlugin {
       return;
     }
 
-    Athlete[] runners = this.createRunnersEx();
+    Athlete[] runners = this.gatherAthletes();
 
     for(Athlete athelete : runners) {
       athelete.onMyMark();
