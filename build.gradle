@@ -58,3 +58,8 @@ java {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 }
+
+base {
+    distsDirectory = layout.buildDirectory
+    libsDirectory = layout.buildDirectory
+}
