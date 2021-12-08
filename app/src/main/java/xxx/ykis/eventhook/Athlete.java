@@ -6,6 +6,7 @@ import org.bukkit.plugin.EventExecutor;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,7 +89,7 @@ class Athlete implements Listener, EventExecutor, Runnable {
       preamble.add(this.eventClass.getName());
     }
 
-    return Stream.concat(preamble.build(), this.args.stream()).toList();
+    return Stream.concat(preamble.build(), this.args.stream()).collect(Collectors.toList());
   }
 
   @Override
