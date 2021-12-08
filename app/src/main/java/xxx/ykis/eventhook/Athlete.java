@@ -10,9 +10,6 @@ import java.util.stream.Stream;
 import java.io.File;
 import java.io.IOException;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
