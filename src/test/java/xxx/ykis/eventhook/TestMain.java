@@ -8,7 +8,9 @@ import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.MockBukkit;
 
 public class TestMain {
+  @SuppressWarnings(value = "unused") // It's not time to be a proper warning
   private ServerMock server;
+  @SuppressWarnings(value = "unused") // It's not time to be a proper warning
   private PluginMain plugin;
 
   @BeforeEach
@@ -25,6 +27,7 @@ public class TestMain {
 
   @Test
   public void testTest() {
+    // TODO Write proper tests
     return;
   }
 }

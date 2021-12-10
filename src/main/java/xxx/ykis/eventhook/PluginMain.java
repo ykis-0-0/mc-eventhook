@@ -70,6 +70,7 @@ public class PluginMain extends JavaPlugin {
       this.getLogger().severe("In config.yml[events]: Type mismatch, Map expected");
     }
 
+    // TODO find a way to make reload config easy?
     ConfigurationSection eventSection = this.getConfig().getConfigurationSection("events");
     ArrayList<Athlete> runners = new ArrayList<>();
 
@@ -119,8 +120,8 @@ public class PluginMain extends JavaPlugin {
       return;
     }
 
+    // TODO Delegate to class, enable diposal and reloading
     Athlete[] runners = this.gatherAthletes();
-
     for(Athlete athelete : runners) {
       athelete.onMyMark();
     }
