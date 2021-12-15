@@ -17,7 +17,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 /** A single executor, reacting to a single event, and running a single task */
-class Athlete implements Listener, EventExecutor, Runnable {
+class Athlete implements EventExecutor, Runnable {
 
   private final Plugin plugin;
   private final String name;
@@ -50,9 +50,10 @@ class Athlete implements Listener, EventExecutor, Runnable {
 
   /**
    * Register itself as an {@link EventExecutor} of the specified {@link Event}
+   * @param commander The {@link AthleteRegistry} it affiliates with
    */
-  void onMyMark() {
-    Bukkit.getPluginManager().registerEvent(this.eventClass, this, this.eventPriority, this, this.plugin);
+  void onMyMark(AthleteRegistry commander) {
+    Bukkit.getPluginManager().registerEvent(this.eventClass, commander, this.eventPriority, this, this.plugin);
   }
 
   @Override

@@ -11,12 +11,6 @@ import java.io.IOException;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.util.List;
-import java.util.ArrayList;
-
-import org.bukkit.event.Event;
-import org.bukkit.event.EventPriority;
-
 // For plugin.yml generation
 import org.bukkit.plugin.java.annotation.plugin.*;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
@@ -39,6 +33,8 @@ import org.bukkit.plugin.PluginDescriptionFile;
 @LogPrefix(value = "EventHook(Test)")
 @LoadOrder(PluginLoadOrder.STARTUP)
 public class PluginMain extends JavaPlugin {
+
+  private AthleteRegistry registry;
 
   private boolean checkConfSchema() {
     YamlConfiguration configTemplate = YamlConfiguration.loadConfiguration(this.getTextResource("defaults.yml"));
@@ -71,45 +67,35 @@ public class PluginMain extends JavaPlugin {
     return permissible;
   }
 
-  private Athlete[] gatherAthletes() {
+  //#region Internal Lifecycle management
+  private void announceCommencement() {
     if(!this.getConfig().isConfigurationSection("events")) {
       this.getLogger().severe("In config.yml[events]: Type mismatch, Map expected");
     }
 
-    // TODO find a way to make reload config easy?
-    ConfigurationSection eventSection = this.getConfig().getConfigurationSection("events");
-    ArrayList<Athlete> runners = new ArrayList<>();
+    this.registry = new AthleteRegistry(this);
 
-    for(String atheleteId : eventSection.getKeys(false)) {
-      ConfigurationSection data = eventSection.getConfigurationSection(atheleteId);
-      ConfigSectionReader reader = new ConfigSectionReader(this, data, atheleteId);
+    ConfigurationSection applicationForms = this.getConfig().getConfigurationSection("events");
 
-      final Class<? extends Event> eventClass;
-      final EventPriority eventPriority;
-      final String execPath;
-      final File workDir;
-      final boolean announce;
-      final List<String> execArgs;
+    int countAthletes = this.registry.processApplications(applicationForms);
 
-      try {
-        eventClass = reader.getEvent();
-        eventPriority = reader.getPriority();
-        execPath = reader.getExecPath();
-        workDir = reader.getWorkDir();
-        announce = reader.getAnnounce();
-        execArgs = reader.getArgs();
-      } catch (RuntimeException e) {
-        this.getLogger().severe(e.getMessage());
-        this.getLogger().warning("Entry Skipped");
-        continue;
-      }
+    this.getLogger().info(String.format(
+      "%d applications received, of which %d are approved",
+      applicationForms.getKeys(false).size(), countAthletes
+    ));
 
-      runners.add(new Athlete(this, atheleteId, eventClass, eventPriority, execPath, workDir, announce, execArgs));
-    }
+    this.registry.makeReady();
 
-    return runners.toArray(new Athlete[0]);
+    this.getLogger().info("All runners on their position.");
   }
 
+  void endOfEvent() {
+    this.registry.dismissParticipants();
+    this.registry = null;
+  }
+  //#endregion
+
+  //#region External Lifecycle compliance
   @Override
   public void onEnable() {
     this.getLogger().info("Enabled!");
@@ -125,21 +111,15 @@ public class PluginMain extends JavaPlugin {
       this.setEnabled(false);
       return;
     }
-
-    // TODO Delegate to class, enable diposal and reloading
-    Athlete[] runners = this.gatherAthletes();
-    for(Athlete athelete : runners) {
-      athelete.onMyMark();
-    }
-    this.getLogger().info(String.format("%d runners parsed successfully.", runners.length));
   }
 
   @Override
   public void onDisable() {
     this.getLogger().info("Disabled!");
   }
+  //#endregion
 
-  // Constructors for MockBukkit
+  //#region Constructors for MockBukkit
   public PluginMain() {
     super();
   }
@@ -147,4 +127,5 @@ public class PluginMain extends JavaPlugin {
   public PluginMain(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
     super(loader, description, dataFolder, file);
   }
+  //#endregion
 }
