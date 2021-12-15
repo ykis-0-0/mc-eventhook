@@ -53,8 +53,8 @@ class Athlete implements Listener, EventExecutor, Runnable {
 
   @Override
   public String toString() {
-    String format = "Runner %s [%s %s] => \"%s\" (%s)";
-    return String.format(format,
+    return String.format(
+      "Runner %s [%s %s] => \"%s\" (%s)",
       this.name,
       this.eventPriority.name(), this.eventClass.getName(),
       this.execPath, String.join("; " , this.args)
@@ -62,23 +62,21 @@ class Athlete implements Listener, EventExecutor, Runnable {
   }
 
   private void reportStart() {
-    String message = "Athlete %s heard signal [%s %s], start running %s";
-    message = String.format(message,
+    this.plugin.getLogger().info(String.format(
+      "Athlete %s heard signal [%s %s], start running %s",
       this.name,
       this.eventClass.getName(), this.eventPriority.name(),
       this.execPath
-    );
-    this.plugin.getLogger().info(message);
+    ));
   }
 
   private void reportEnd(int exitCode){
-    String message = "Runner %s on %s finished %s with exit code of %d (seems %s)";
-    message = String.format(message,
+    this.plugin.getLogger().info(String.format(
+      "Runner %s on %s finished %s with exit code of %d (seems %s)",
       this.name,
       this.eventClass.getName() , this.execPath,
       exitCode, exitCode == 0 ? "okay" : "failed"
-    );
-    this.plugin.getLogger().info(message);
+    ));
   }
 
   private List<String> prepCmdline() {

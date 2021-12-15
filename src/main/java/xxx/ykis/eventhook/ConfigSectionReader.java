@@ -21,11 +21,12 @@ class ConfigSectionReader {
 
   Class<? extends Event> getEvent() {
     final String eventFQCN = section.getString("event.class");
-    String message = null;
 
     if(eventFQCN == null) {
-      message = String.format("In config.yml[events.%s]: Target Event not specified", this.name);
-      throw new RuntimeException(message);
+      throw new RuntimeException(String.format(
+        "In config.yml[events.%s]: Target Event not specified",
+        this.name
+      ));
     }
 
     Class<? extends Event> eventClass = null;
@@ -34,16 +35,22 @@ class ConfigSectionReader {
       final Class<?> classInput = Class.forName(eventFQCN);
       eventClass = classInput.asSubclass(Event.class);
     } catch (ClassNotFoundException e) {
-      message = String.format("In config.yml[events.%s]: Class not found: [%s]", this.name, eventFQCN);
+      throw new RuntimeException(String.format(
+        "In config.yml[events.%s]: Class not found: [%s]",
+        this.name, eventFQCN
+      ));
     } catch (ClassCastException e) {
-      message = String.format("In config.yml[events.%s]: Class [%s] is not (subclass of) [%s]", this.name, eventFQCN, Event.class.getName());
-    } finally {
-      if(eventClass == null) { // Final Guard
-        message = String.format("In config.yml[events.%s]: Unable to retrieve class object: [%s]", this.name, eventFQCN);
-      }
-      if(message != null) {
-        throw new RuntimeException(message);
-      }
+      throw new RuntimeException(String.format(
+        "In config.yml[events.%s]: Class [%s] is not (subclass of) [%s]",
+        this.name, eventFQCN, Event.class.getName()
+      ));
+    }
+
+    if(eventClass == null) { // Final Guard
+      throw new RuntimeException(String.format(
+        "In config.yml[events.%s]: Unable to retrieve class object: [%s]",
+        this.name, eventFQCN
+      ));
     }
 
     return eventClass;
@@ -51,11 +58,12 @@ class ConfigSectionReader {
 
   EventPriority getPriority() {
     final String priorityName = section.getString("event.priority");
-    String message = null;
 
     if(priorityName == null) {
-      message = String.format("In config.yml[events.%s]: Runner Priority not specified", this.name);
-      throw new RuntimeException(message);
+      throw new RuntimeException(String.format(
+        "In config.yml[events.%s]: Runner Priority not specified",
+        this.name
+      ));
     }
 
     final EventPriority priority;
@@ -63,8 +71,10 @@ class ConfigSectionReader {
     try {
       priority = EventPriority.valueOf(priorityName);
     } catch (IllegalArgumentException e) {
-      message = String.format("In config.yml[events.%s]: [%s] is not a valid EventPriority", this.name, priorityName);
-      throw new RuntimeException(message);
+      throw new RuntimeException(String.format(
+        "In config.yml[events.%s]: [%s] is not a valid EventPriority",
+        this.name, priorityName
+      ));
     }
 
     return priority;
@@ -74,8 +84,10 @@ class ConfigSectionReader {
     final String execPath = section.getString("run.exec");
 
     if(execPath == null) {
-      String message = String.format("In config.yml[events.%s]: Executable not specified", this.name);
-      throw new RuntimeException(message);
+      throw new RuntimeException(String.format(
+        "In config.yml[events.%s]: Executable not specified",
+        this.name
+      ));
     }
 
     return execPath;
@@ -86,8 +98,10 @@ class ConfigSectionReader {
 
     File workDir = workDirPath == null ? null : new File(workDirPath);
     if(workDir != null && !workDir.isDirectory()) {
-      String message = String.format("In config.yml[events.%s]: Working Directory [%s] specified but not a valid directory", this.name, workDir);
-      this.plugin.getLogger().severe(message);
+      this.plugin.getLogger().severe(String.format(
+        "In config.yml[events.%s]: Working Directory [%s] specified but not a valid directory",
+        this.name, workDir
+      ));
       this.plugin.getLogger().warning("Ignoring this line");
       workDir = null;
     }

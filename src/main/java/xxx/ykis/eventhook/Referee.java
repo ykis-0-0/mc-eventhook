@@ -31,8 +31,10 @@ class Referee implements Runnable {
         thisLine = lineReaader.readLine();
       } catch (IOException e) {
         e.printStackTrace();
-        String message = " => [" + this.target + "] Error occured while relaying program output.";
-        this.plugin.getLogger().severe(message);
+        this.plugin.getLogger().severe(String.format(
+          "=>[%s] Error occured while relaying program output.",
+          this.target
+        ));
         return;
       }
 
