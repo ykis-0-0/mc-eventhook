@@ -8,6 +8,7 @@ import java.util.logging.Level;
 
 import org.bukkit.plugin.Plugin;
 
+/** A helper class for outsourcing the relaying of logs from the {@link Athlete}s */
 class Referee implements Runnable {
   private final Plugin plugin;
   private final String target;

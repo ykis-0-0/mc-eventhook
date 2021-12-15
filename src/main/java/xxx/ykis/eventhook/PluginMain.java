@@ -8,8 +8,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -26,7 +26,13 @@ import org.bukkit.plugin.PluginLoadOrder;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-
+/**
+ * The entry point to the whole plugin,
+ * the manager of the whole plugin lifecycle,
+ * the interface to commands from the outside,
+ * and the first-stage guard of the configuration schema.
+ */
+// Base Information for plugin.yml
 @Plugin(name = "EventHook", version = "0.0-alpha")
 @ApiVersion(ApiVersion.Target.v1_16)
 @Author(value = "ykis-0-0")

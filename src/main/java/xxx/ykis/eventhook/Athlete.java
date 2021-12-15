@@ -16,6 +16,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+/** A single executor, reacting to a single event, and running a single task */
 class Athlete implements Listener, EventExecutor, Runnable {
 
   private final Plugin plugin;
@@ -47,6 +48,9 @@ class Athlete implements Listener, EventExecutor, Runnable {
     new Thread(this).start();
   }
 
+  /**
+   * Register itself as an {@link EventExecutor} of the specified {@link Event}
+   */
   void onMyMark() {
     Bukkit.getPluginManager().registerEvent(this.eventClass, this, this.eventPriority, this, this.plugin);
   }
@@ -61,6 +65,7 @@ class Athlete implements Listener, EventExecutor, Runnable {
     );
   }
 
+  /** Log its start */
   private void reportStart() {
     this.plugin.getLogger().info(String.format(
       "Athlete %s heard signal [%s %s], start running %s",
@@ -70,6 +75,7 @@ class Athlete implements Listener, EventExecutor, Runnable {
     ));
   }
 
+  /** Log its finish */
   private void reportEnd(int exitCode){
     this.plugin.getLogger().info(String.format(
       "Runner %s on %s finished %s with exit code of %d (seems %s)",
@@ -79,6 +85,7 @@ class Athlete implements Listener, EventExecutor, Runnable {
     ));
   }
 
+  /** Constuct the command line from the arguments and options given */
   private List<String> prepCmdline() {
     Stream.Builder<String> preamble = Stream.builder();
 
@@ -90,6 +97,7 @@ class Athlete implements Listener, EventExecutor, Runnable {
     return Stream.concat(preamble.build(), this.args.stream()).collect(Collectors.toList());
   }
 
+  /** Start the task, while also setting up {@link Referee}s to relay the programs output to the log */
   @Override
   public void run() {
     this.reportStart();
@@ -124,7 +132,13 @@ class Athlete implements Listener, EventExecutor, Runnable {
     this.reportEnd(exitCode);
   }
 
-  // Why this should ever happen? Fucking filthy
+  /**
+   * Internal helper method to wait for the {@link Process} to exit with the illusion of successfully avoided nesting try and catch clauses
+   *
+   * tbh why should this ever happen in the first place? Fucking filthy
+   * @param runner The relevant {@link Process} started
+   * @return Exit code of the process, or {@code -1} if the process was interrupted
+   */
   private int getExitCode(Process runner){
     int exitCode = -1;
     try {

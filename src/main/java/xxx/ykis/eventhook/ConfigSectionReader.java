@@ -8,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 
+/** Utility & Wrapper class to parse and validate the individual configuration entries */
 class ConfigSectionReader {
   private final Plugin plugin;
   private final ConfigurationSection section;
@@ -98,6 +99,7 @@ class ConfigSectionReader {
 
     File workDir = workDirPath == null ? null : new File(workDirPath);
     if(workDir != null && !workDir.isDirectory()) {
+      // This is not a fatal error, or we should delay it until execution
       this.plugin.getLogger().severe(String.format(
         "In config.yml[events.%s]: Working Directory [%s] specified but not a valid directory",
         this.name, workDir
