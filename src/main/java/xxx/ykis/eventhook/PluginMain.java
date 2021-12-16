@@ -28,7 +28,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
  */
 // Base Information for plugin.yml
 @Plugin(name = "EventHook", version = "0.0-alpha")
-@ApiVersion(ApiVersion.Target.v1_16)
+@ApiVersion(ApiVersion.Target.v1_15)
 @Author(value = "ykis-0-0")
 @LogPrefix(value = "EventHook(Test)")
 @LoadOrder(PluginLoadOrder.STARTUP)
