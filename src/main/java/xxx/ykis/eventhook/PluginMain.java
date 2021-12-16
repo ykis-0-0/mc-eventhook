@@ -11,6 +11,10 @@ import java.io.IOException;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 // For plugin.yml generation
 import org.bukkit.plugin.java.annotation.plugin.*;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
@@ -32,9 +36,12 @@ import org.bukkit.plugin.PluginDescriptionFile;
 @Author(value = "ykis-0-0")
 @LogPrefix(value = "EventHook(Test)")
 @LoadOrder(PluginLoadOrder.STARTUP)
+// Commands
+@org.bukkit.plugin.java.annotation.command.Command(name = "evhk", usage = "Usage: /<command> <load | unload | reload | help>")
 public class PluginMain extends JavaPlugin {
 
   private AthleteRegistry registry;
+  private static final org.bukkit.plugin.java.annotation.command.Command annotationCmd = PluginMain.class.getAnnotation(org.bukkit.plugin.java.annotation.command.Command.class);
 
   private boolean checkConfSchema() {
     YamlConfiguration configTemplate = YamlConfiguration.loadConfiguration(this.getTextResource("defaults.yml"));
@@ -95,6 +102,52 @@ public class PluginMain extends JavaPlugin {
   }
   //#endregion
 
+  @Override
+  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    if(sender instanceof Player) {
+      sender.sendMessage("This command is intended for use in server console only");
+      return false;
+    }
+
+    if(args.length != 1) {
+      sender.sendMessage(String.format(
+        "Too %s arguments!",
+        args.length < 1 ? "few" : "many"
+      ));
+      return false;
+    }
+
+    String action = args[0];
+    if(!java.util.Arrays.asList(new String[] {"load", "unload", "reload"}).contains(action)) {
+      sender.sendMessage(PluginMain.annotationCmd.usage().replace("<command>", label));
+      if(action != "help") sender.sendMessage(String.format(
+        "%s is not a valid actions", action
+      ));
+      return action == "help";
+    }
+
+    if(action == "unload" || action == "reload") {
+      if(this.registry == null) {
+        sender.sendMessage("There is nothing left to unload");
+      } else {
+        this.endOfEvent();
+        sender.sendMessage("Configuration unloaded");
+      }
+    }
+    if(action == "load" || action == "reload") {
+      if(this.registry != null) {
+        sender.sendMessage("A loaded configuration exists");
+      } else{
+        this.reloadConfig();
+        this.announceCommencement();
+        sender.sendMessage("Configuration loaded");
+      }
+    }
+
+    return true;
+  }
+  //#endregion
+
   //#region External Lifecycle compliance
   @Override
   public void onEnable() {
@@ -111,6 +164,9 @@ public class PluginMain extends JavaPlugin {
       this.setEnabled(false);
       return;
     }
+
+    this.getCommand(PluginMain.annotationCmd.name()).setExecutor(this);
+    this.announceCommencement();
   }
 
   @Override
