@@ -40,7 +40,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 @org.bukkit.plugin.java.annotation.command.Command(name = "evhk", usage = "Usage: /<command> <load | unload | reload | help>")
 public class PluginMain extends JavaPlugin {
 
-  private Registry registry;
+  private Registry registry = null;
   private static final org.bukkit.plugin.java.annotation.command.Command annotationCmd = PluginMain.class.getAnnotation(org.bukkit.plugin.java.annotation.command.Command.class);
 
   private boolean checkConfSchema() {
@@ -80,16 +80,18 @@ public class PluginMain extends JavaPlugin {
       this.getLogger().severe("In config.yml[events]: Type mismatch, Map expected");
     }
 
-    this.registry = new Registry(this);
+    Registry registry = new Registry(this);
 
     ConfigurationSection applicationForms = this.getConfig().getConfigurationSection("events");
 
-    int countAthletes = this.registry.processApplications(applicationForms);
+    int countAthletes = registry.processApplications(applicationForms);
 
     this.getLogger().info(String.format(
       "%d applications received, of which %d are approved",
       applicationForms.getKeys(false).size(), countAthletes
     ));
+
+    this.registry = registry;
 
     this.registry.makeReady();
 
