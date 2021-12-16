@@ -9,14 +9,14 @@ import java.util.logging.Level;
 import org.bukkit.plugin.Plugin;
 
 /** A helper class for outsourcing the relaying of logs from the {@link Athlete}s */
-class Referee implements Runnable {
+class LoggingHelper implements Runnable {
   private final Plugin plugin;
   private final String target;
   private final Level level;
   private final BufferedReader lineReaader;
   private boolean enough;
 
-  Referee(Plugin plugin, String target, Level level, InputStream stream) {
+  LoggingHelper(Plugin plugin, String target, Level level, InputStream stream) {
     this.plugin = plugin;
     this.target = target;
     this.level = level;

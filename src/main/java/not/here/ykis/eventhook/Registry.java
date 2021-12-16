@@ -14,12 +14,12 @@ import java.io.File;
 import java.util.List;
 
 /** The registry, as its name suggests, builds, keeps record of and deregisters individual {@link Athlete}s */
-class AthleteRegistry implements Listener {
+class Registry implements Listener {
 
   private ArrayList<Athlete> theRegister;
   private Plugin plugin;
 
-  AthleteRegistry(Plugin plugin) {
+  Registry(Plugin plugin) {
     this.theRegister = new ArrayList<>();
     this.plugin = plugin;
   }
@@ -36,7 +36,7 @@ class AthleteRegistry implements Listener {
   int processApplications(ConfigurationSection applicationForms) {
     for(String applicantName : applicationForms.getKeys(false)) {
       ConfigurationSection application = applicationForms.getConfigurationSection(applicantName);
-      ConfigSectionReader reader = new ConfigSectionReader(this.plugin, application, applicantName);
+      ConfigHelper reader = new ConfigHelper(this.plugin, application, applicantName);
 
       final Class<? extends Event> eventClass;
       final EventPriority eventPriority;

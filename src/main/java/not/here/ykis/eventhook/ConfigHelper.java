@@ -9,12 +9,12 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 
 /** Utility & Wrapper class to parse and validate the individual configuration entries */
-class ConfigSectionReader {
+class ConfigHelper {
   private final Plugin plugin;
   private final ConfigurationSection section;
   private final String name;
 
-  ConfigSectionReader(Plugin plugin, ConfigurationSection section, String name) {
+  ConfigHelper(Plugin plugin, ConfigurationSection section, String name) {
     this.plugin = plugin;
     this.section = section;
     this.name = name;

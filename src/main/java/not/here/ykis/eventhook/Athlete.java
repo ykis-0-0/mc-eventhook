@@ -50,9 +50,9 @@ class Athlete implements EventExecutor, Runnable {
 
   /**
    * Register itself as an {@link EventExecutor} of the specified {@link Event}
-   * @param commander The {@link AthleteRegistry} it affiliates with
+   * @param commander The {@link Registry} it affiliates with
    */
-  void onMyMark(AthleteRegistry commander) {
+  void onMyMark(Registry commander) {
     Bukkit.getPluginManager().registerEvent(this.eventClass, commander, this.eventPriority, this, this.plugin);
   }
 
@@ -98,7 +98,7 @@ class Athlete implements EventExecutor, Runnable {
     return Stream.concat(preamble.build(), this.args.stream()).collect(Collectors.toList());
   }
 
-  /** Start the task, while also setting up {@link Referee}s to relay the programs output to the log */
+  /** Start the task, while also setting up {@link LoggingHelper}s to relay the programs output to the log */
   @Override
   public void run() {
     this.reportStart();
@@ -115,8 +115,8 @@ class Athlete implements EventExecutor, Runnable {
     try {
       Process proc = buildur.start();
 
-      Referee chief = new Referee(this.plugin, this.name, Level.INFO, proc.getInputStream());
-      Referee side = new Referee(this.plugin, this.name, Level.SEVERE, proc.getErrorStream());
+      LoggingHelper chief = new LoggingHelper(this.plugin, this.name, Level.INFO, proc.getInputStream());
+      LoggingHelper side = new LoggingHelper(this.plugin, this.name, Level.SEVERE, proc.getErrorStream());
 
       Thread stdout = new Thread(chief);
       Thread stderr = new Thread(side);
