@@ -1,4 +1,4 @@
-package xxx.ykis.eventhook;
+package not.here.ykis.eventhook;
 
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.EventExecutor;

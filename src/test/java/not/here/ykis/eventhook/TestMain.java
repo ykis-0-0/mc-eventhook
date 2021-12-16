@@ -1,4 +1,4 @@
-package xxx.ykis.eventhook;
+package not.here.ykis.eventhook;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package xxx.ykis.eventhook;
+package not.here.ykis.eventhook;
 
 import java.io.BufferedReader;
 import java.io.IOException;
