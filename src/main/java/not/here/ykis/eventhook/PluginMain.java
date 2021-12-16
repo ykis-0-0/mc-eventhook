@@ -171,6 +171,8 @@ public class PluginMain extends JavaPlugin {
 
   @Override
   public void onDisable() {
+    this.registry.dismissParticipants();
+
     this.getLogger().info("Disabled!");
   }
   //#endregion
