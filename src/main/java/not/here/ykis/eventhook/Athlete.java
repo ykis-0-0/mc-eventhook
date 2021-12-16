@@ -24,9 +24,9 @@ class Athlete implements EventExecutor, Runnable {
   private final Class<? extends Event> eventClass;
   private final EventPriority eventPriority;
   private final String execPath;
+  private final File workDir;
   private final boolean announce;
   private final List<String> args;
-  private final File workDir;
 
 
   public Athlete(Plugin plugin, String name, Class<? extends Event> eventClass, EventPriority eventPriority,

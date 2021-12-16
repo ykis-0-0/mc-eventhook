@@ -16,12 +16,12 @@ import java.util.List;
 /** The registry, as its name suggests, builds, keeps record of and deregisters individual {@link Athlete}s */
 class Registry implements Listener {
 
-  private ArrayList<Athlete> theRegister;
   private Plugin plugin;
+  private ArrayList<Athlete> theRegister;
 
   Registry(Plugin plugin) {
-    this.theRegister = new ArrayList<>();
     this.plugin = plugin;
+    this.theRegister = new ArrayList<>();
   }
 
   /**
