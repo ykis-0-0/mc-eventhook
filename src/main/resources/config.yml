@@ -18,7 +18,7 @@ events_sample:
     matchers:
       # Each element is an item
       - feed: true # This data should feed into the program
-        eval: !enum # Notifies the plugin that the final enum should be casted into String
+        eval: # TODO if tagged !enum, Notifies the plugin that the final enum should be casted into String
           - method: getCause # Name of method in the current value (the Event if it is the first stage)
             expect_type: org.bukkit.event.player.PlayerTeleportEvent.TeleportCause # The expected return type after the method call
         match: ~ # ~ means null, Could be omitted if not intended as a predicate
