@@ -11,13 +11,13 @@ import java.io.IOException;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 // For plugin.yml generation
 import org.bukkit.plugin.java.annotation.plugin.*;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
+import org.bukkit.plugin.java.annotation.command.*;
 import org.bukkit.plugin.PluginLoadOrder;
 
 // For MockBukkit
@@ -37,11 +37,12 @@ import org.bukkit.plugin.PluginDescriptionFile;
 @LogPrefix(value = "EventHook(Test)")
 @LoadOrder(PluginLoadOrder.STARTUP)
 // Commands
-@org.bukkit.plugin.java.annotation.command.Command(name = "evhk", usage = "Usage: /<command> <load | unload | reload | help>")
+@Commands(
+  @Command(name = Constants.COMMAND_NAME, desc = "Control the activation state of hooked scripts", usage = "Usage: /<command> <load | unload | reload | help>")
+)
 public class PluginMain extends JavaPlugin {
 
   private Registry registry = null;
-  private static final org.bukkit.plugin.java.annotation.command.Command annotationCmd = PluginMain.class.getAnnotation(org.bukkit.plugin.java.annotation.command.Command.class);
 
   private boolean checkConfSchema() {
     YamlConfiguration configTemplate = YamlConfiguration.loadConfiguration(this.getTextResource("defaults.yml"));
@@ -105,7 +106,7 @@ public class PluginMain extends JavaPlugin {
   //#endregion
 
   @Override
-  public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+  public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
     if(sender instanceof Player) {
       sender.sendMessage("This command is intended for use in server console only");
       return false;
@@ -121,7 +122,6 @@ public class PluginMain extends JavaPlugin {
 
     String action = args[0];
     if(!java.util.Arrays.asList(new String[] {"load", "unload", "reload"}).contains(action)) {
-      sender.sendMessage(PluginMain.annotationCmd.usage().replace("<command>", label));
       if(action != "help") sender.sendMessage(String.format(
         "%s is not a valid actions", action
       ));
@@ -167,7 +167,7 @@ public class PluginMain extends JavaPlugin {
       return;
     }
 
-    this.getCommand(PluginMain.annotationCmd.name()).setExecutor(this);
+    this.getCommand(Constants.COMMAND_NAME).setExecutor(this);
     this.announceCommencement();
   }
 
