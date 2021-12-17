@@ -78,7 +78,7 @@ public class PluginMain extends JavaPlugin {
   //#region Internal Lifecycle management
   private boolean announceCommencement() {
     if(this.registry != null) {
-      this.getLogger.warning("There are runners standing by, please dismiss them before reload")
+      this.getLogger().warning("There are runners standing by, please dismiss them before reload");
       return false;
     }
 
