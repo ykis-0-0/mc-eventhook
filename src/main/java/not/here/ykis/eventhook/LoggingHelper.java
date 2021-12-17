@@ -40,9 +40,10 @@ class LoggingHelper implements Runnable {
       }
 
       if(thisLine == null || this.shouldStop) break;
-      String outLine = String.format("=>[%s] %s", this.target, thisLine);
 
-      this.logger.log(this.level, outLine);
+      this.logger.log(this.level, String.format(
+        "=>[%s] %s", this.target, thisLine
+      ));
     }
   }
 
