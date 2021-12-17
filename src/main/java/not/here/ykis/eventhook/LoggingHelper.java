@@ -10,14 +10,14 @@ import org.bukkit.plugin.Plugin;
 
 /** A helper class for outsourcing the relaying of logs from the {@link Athlete}s */
 class LoggingHelper implements Runnable {
-  private final Plugin plugin;
+  private final Logger logger;
   private final String target;
   private final Level level;
   private final BufferedReader lineReader;
   private boolean shouldStop;
 
   LoggingHelper(Plugin plugin, String target, Level level, InputStream stream) {
-    this.plugin = plugin;
+    this.logger = plugin.getLogger();
     this.target = target;
     this.level = level;
     this.lineReader = new BufferedReader(new InputStreamReader(stream));
@@ -32,7 +32,7 @@ class LoggingHelper implements Runnable {
         thisLine = lineReader.readLine();
       } catch (IOException e) {
         e.printStackTrace();
-        this.plugin.getLogger().severe(String.format(
+        this.logger.severe(String.format(
           "=>[%s] Error occured while relaying program output.",
           this.target
         ));
@@ -42,7 +42,7 @@ class LoggingHelper implements Runnable {
       if(thisLine == null || this.shouldStop) break;
       String outLine = String.format("=>[%s] %s", this.target, thisLine);
 
-      this.plugin.getLogger().log(this.level, outLine);
+      this.logger.log(this.level, outLine);
     }
   }
 
