@@ -2,6 +2,7 @@ package not.here.ykis.eventhook;
 
 final class Constants {
 
+  static final String RUNNERS_CONTAINER = "events";
   static final String COMMAND_NAME = "evhk";
 
   private Constants() {

@@ -81,14 +81,16 @@ public class PluginMain extends JavaPlugin {
       this.getLogger.warning("There are runners standing by, please dismiss them before reload")
       return false;
     }
-    if(!this.getConfig().isConfigurationSection("events")) {
-      this.getLogger().severe("In config.yml[events]: Type mismatch, Map expected");
-      return false;
+
+    if(!this.getConfig().isConfigurationSection(Constants.RUNNERS_CONTAINER)) {
+      this.getLogger().severe(String.format(
+        "In config.yml[%s]: Type mismatch, Map expected",
+        Constants.RUNNERS_CONTAINER
+      ));
     }
 
     Registry registry = new Registry(this);
-
-    ConfigurationSection applicationForms = this.getConfig().getConfigurationSection("events");
+    ConfigurationSection applicationForms = this.getConfig().getConfigurationSection(Constants.RUNNERS_CONTAINER);
 
     int countAthletes = registry.processApplications(applicationForms);
 
