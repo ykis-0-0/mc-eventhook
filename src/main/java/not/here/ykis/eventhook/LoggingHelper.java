@@ -14,20 +14,20 @@ class LoggingHelper implements Runnable {
   private final String target;
   private final Level level;
   private final BufferedReader lineReader;
-  private boolean enough;
+  private boolean shouldStop;
 
   LoggingHelper(Plugin plugin, String target, Level level, InputStream stream) {
     this.plugin = plugin;
     this.target = target;
     this.level = level;
     this.lineReader = new BufferedReader(new InputStreamReader(stream));
-    this.enough = false;
+    this.shouldStop = false;
   }
 
   @Override
   public void run() {
     String thisLine = "";
-    while(!this.enough) {
+    while(true) {
       try {
         thisLine = lineReader.readLine();
       } catch (IOException e) {
@@ -39,8 +39,7 @@ class LoggingHelper implements Runnable {
         return;
       }
 
-      if(thisLine == null) break;
-
+      if(thisLine == null || this.shouldStop) break;
       String outLine = String.format("=>[%s] %s", this.target, thisLine);
 
       this.plugin.getLogger().log(this.level, outLine);
@@ -48,6 +47,6 @@ class LoggingHelper implements Runnable {
   }
 
   void end() {
-    this.enough = true;
+    this.shouldStop = true;
   }
 }
