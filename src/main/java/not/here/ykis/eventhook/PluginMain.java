@@ -122,13 +122,13 @@ public class PluginMain extends JavaPlugin {
 
     String action = args[0];
     if(!java.util.Arrays.asList(new String[] {"load", "unload", "reload"}).contains(action)) {
-      if(action != "help") sender.sendMessage(String.format(
-        "%s is not a valid actions", action
+      if(!action.equals("help")) sender.sendMessage(String.format(
+        "%s is not a valid action", action
       ));
-      return action == "help";
+      return false;
     }
 
-    if(action == "unload" || action == "reload") {
+    if(action.equals("unload") || action.equals("reload")) {
       if(this.registry == null) {
         sender.sendMessage("There is nothing left to unload");
       } else {
@@ -136,7 +136,7 @@ public class PluginMain extends JavaPlugin {
         sender.sendMessage("Configuration unloaded");
       }
     }
-    if(action == "load" || action == "reload") {
+    if(action.equals("load") || action.equals("reload")) {
       if(this.registry != null) {
         sender.sendMessage("A loaded configuration exists");
       } else{
