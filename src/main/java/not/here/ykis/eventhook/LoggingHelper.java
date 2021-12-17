@@ -1,12 +1,15 @@
 package not.here.ykis.eventhook;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.logging.Level;
-
 import org.bukkit.plugin.Plugin;
+
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.io.InputStream;
+import java.io.BufferedReader;
+
+import java.io.InputStreamReader;
+import java.io.IOException;
+
 
 /** A helper class for outsourcing the relaying of logs from the {@link Athlete}s */
 class LoggingHelper implements Runnable {
