@@ -36,6 +36,24 @@
 				"$gradle"
 			],
 			"label": "gradle: app:clean"
+		},
+		{
+			"type": "gradle",
+			"id": "/workspaces/minecraft-pluginapp:testapp",
+			"script": "app:test",
+			"description": "Runs the test suite.",
+			"group": "verification",
+			"project": "app",
+			"buildFile": "/workspaces/minecraft-plugin/app/build.gradle",
+			"rootProject": "minecraft-plugin",
+			"projectFolder": "/workspaces/minecraft-plugin",
+			"workspaceFolder": "/workspaces/minecraft-plugin",
+			"args": "",
+			"javaDebug": false,
+			"problemMatcher": [
+				"$gradle"
+			],
+			"label": "gradle: app:test"
 		}
 	]
 }
