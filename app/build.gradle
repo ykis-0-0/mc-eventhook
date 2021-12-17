@@ -26,6 +26,11 @@ dependencies {
     // implementation 'com.google.guava:guava:30.1.1-jre'
 
     compileOnly 'io.papermc.paper:paper-api:1.17-R0.1-SNAPSHOT'
+
+    // Add generator for plugin.yml
+
+    compileOnly 'org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT'
+    annotationProcessor 'org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT'
 }
 
 // tasks.named('test') {

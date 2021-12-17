@@ -8,6 +8,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.command.UnknownCommandEvent;
 
+import org.bukkit.plugin.java.annotation.plugin.*;
+import org.bukkit.plugin.java.annotation.plugin.author.Author;
+import org.bukkit.plugin.PluginLoadOrder;
+
+@Plugin(name = "EventHook", version = "0.0-alpha")
+@ApiVersion(ApiVersion.Target.v1_16)
+@Author(value = "ykis-0-0")
+@LogPrefix(value = "EventHook(Test)")
+@LoadOrder(PluginLoadOrder.STARTUP)
 public class PluginMain extends JavaPlugin {
     @Override
     public void onEnable() {
