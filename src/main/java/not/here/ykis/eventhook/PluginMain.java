@@ -76,9 +76,14 @@ public class PluginMain extends JavaPlugin {
   }
 
   //#region Internal Lifecycle management
-  private void announceCommencement() {
+  private boolean announceCommencement() {
+    if(this.registry != null) {
+      this.getLogger.warning("There are runners standing by, please dismiss them before reload")
+      return false;
+    }
     if(!this.getConfig().isConfigurationSection("events")) {
       this.getLogger().severe("In config.yml[events]: Type mismatch, Map expected");
+      return false;
     }
 
     Registry registry = new Registry(this);
@@ -97,11 +102,18 @@ public class PluginMain extends JavaPlugin {
     this.registry.makeReady();
 
     this.getLogger().info("All runners on their position.");
+    return true;
   }
 
-  void endOfEvent() {
+  private boolean endOfEvent() {
+    if(this.registry == null) {
+      this.getLogger().warning("There is no waiting runners, no need to demobilize");
+      return false;
+    }
+
     this.registry.dismissParticipants();
     this.registry = null;
+    return true;
   }
   //#endregion
 
@@ -129,19 +141,19 @@ public class PluginMain extends JavaPlugin {
     }
 
     if(action.equals("unload") || action.equals("reload")) {
-      if(this.registry == null) {
+      boolean result = this.endOfEvent();
+      if(result) {
         sender.sendMessage("There is nothing left to unload");
       } else {
-        this.endOfEvent();
         sender.sendMessage("Configuration unloaded");
       }
     }
     if(action.equals("load") || action.equals("reload")) {
-      if(this.registry != null) {
+      this.reloadConfig();
+      boolean result = this.announceCommencement();
+      if(result) {
         sender.sendMessage("A loaded configuration exists");
       } else{
-        this.reloadConfig();
-        this.announceCommencement();
         sender.sendMessage("Configuration loaded");
       }
     }
@@ -168,12 +180,12 @@ public class PluginMain extends JavaPlugin {
     }
 
     this.getCommand(Constants.COMMAND_NAME).setExecutor(this);
-    this.announceCommencement();
+    boolean loaded = this.announceCommencement();
   }
 
   @Override
   public void onDisable() {
-    this.registry.dismissParticipants();
+    this.endOfEvent();
 
     this.getLogger().info("Disabled!");
   }
