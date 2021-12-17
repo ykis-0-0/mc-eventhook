@@ -5,7 +5,7 @@
 build
 
 # Ignore binary directory
-/app/bin
+/bin
 
 # IMO gradle wrappers should also be ignored
 /gradle/wrapper
