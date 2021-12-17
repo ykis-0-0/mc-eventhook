@@ -16,11 +16,19 @@ repositories {
     mavenCentral()
 
     maven { url 'https://papermc.io/repo/repository/maven-public/' }
+
+    // For MockBukkit
+    maven { url 'https://jitpack.io' }
+
 }
 
 dependencies {
-    // // Use JUnit Jupiter for testing.
-    // testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+
+    // Use MockBukkit for testing.
+    testImplementation 'com.github.seeseemelk:MockBukkit-v1.15:0.3.1-SNAPSHOT'
+    // Which,
+    // Use JUnit Jupiter for testing.
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
 
     // // This dependency is used by the application.
     // implementation 'com.google.guava:guava:30.1.1-jre'
@@ -31,14 +39,20 @@ dependencies {
 
     // Add generator for plugin.yml
 
-    compileOnly 'org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT'
-    annotationProcessor 'org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT'
+    def depAnnotations = 'org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT'
+    compileOnly depAnnotations
+    annotationProcessor depAnnotations
+
+    // also enable for testing
+    testCompileOnly depAnnotations
+    testAnnotationProcessor depAnnotations
+
 }
 
-// tasks.named('test') {
-//     // Use JUnit Platform for unit tests.
-//     useJUnitPlatform()
-// }
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}
 
 java {
     sourceCompatibility = 1.8

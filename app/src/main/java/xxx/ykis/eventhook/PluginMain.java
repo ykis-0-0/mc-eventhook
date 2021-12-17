@@ -17,9 +17,15 @@ import java.util.ArrayList;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 
+// For plugin.yml generation
 import org.bukkit.plugin.java.annotation.plugin.*;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import org.bukkit.plugin.PluginLoadOrder;
+
+// For MockBukkit
+import org.bukkit.plugin.java.JavaPluginLoader;
+import org.bukkit.plugin.PluginDescriptionFile;
+
 
 @Plugin(name = "EventHook", version = "0.0-alpha")
 @ApiVersion(ApiVersion.Target.v1_16)
@@ -124,5 +130,14 @@ public class PluginMain extends JavaPlugin {
   @Override
   public void onDisable() {
     this.getLogger().info("Disabled!");
+  }
+
+  // Constructors for MockBukkit
+  public PluginMain() {
+    super();
+  }
+
+  public PluginMain(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+    super(loader, description, dataFolder, file);
   }
 }
