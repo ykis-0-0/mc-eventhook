@@ -30,6 +30,7 @@ class LoggingHelper implements Runnable {
   @Override
   public void run() {
     String thisLine = "";
+
     while(true) {
       try {
         thisLine = lineReader.readLine();
