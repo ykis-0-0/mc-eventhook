@@ -3,12 +3,12 @@
 	"tasks": [
 		{
 			"type": "gradle",
-			"id": "/workspaces/minecraft-pluginapp:jarapp",
-			"script": "app:jar",
+			"id": "/workspaces/minecraft-pluginjarminecraft-plugin",
+			"script": "jar",
 			"description": "Assembles a jar archive containing the main classes.",
 			"group": "build",
-			"project": "app",
-			"buildFile": "/workspaces/minecraft-plugin/app/build.gradle",
+			"project": "minecraft-plugin",
+			"buildFile": "/workspaces/minecraft-plugin/build.gradle",
 			"rootProject": "minecraft-plugin",
 			"projectFolder": "/workspaces/minecraft-plugin",
 			"workspaceFolder": "/workspaces/minecraft-plugin",
@@ -17,34 +17,16 @@
 			"problemMatcher": [
 				"$gradle"
 			],
-			"label": "gradle: app:jar"
+			"label": "gradle: jar"
 		},
 		{
 			"type": "gradle",
-			"id": "/workspaces/minecraft-pluginapp:cleanapp",
-			"script": "app:clean",
-			"description": "Deletes the build directory.",
-			"group": "build",
-			"project": "app",
-			"buildFile": "/workspaces/minecraft-plugin/app/build.gradle",
-			"rootProject": "minecraft-plugin",
-			"projectFolder": "/workspaces/minecraft-plugin",
-			"workspaceFolder": "/workspaces/minecraft-plugin",
-			"args": "",
-			"javaDebug": false,
-			"problemMatcher": [
-				"$gradle"
-			],
-			"label": "gradle: app:clean"
-		},
-		{
-			"type": "gradle",
-			"id": "/workspaces/minecraft-pluginapp:testapp",
-			"script": "app:test",
+			"id": "/workspaces/minecraft-plugintestminecraft-plugin",
+			"script": "test",
 			"description": "Runs the test suite.",
 			"group": "verification",
-			"project": "app",
-			"buildFile": "/workspaces/minecraft-plugin/app/build.gradle",
+			"project": "minecraft-plugin",
+			"buildFile": "/workspaces/minecraft-plugin/build.gradle",
 			"rootProject": "minecraft-plugin",
 			"projectFolder": "/workspaces/minecraft-plugin",
 			"workspaceFolder": "/workspaces/minecraft-plugin",
@@ -53,7 +35,25 @@
 			"problemMatcher": [
 				"$gradle"
 			],
-			"label": "gradle: app:test"
+			"label": "gradle: test"
+		},
+		{
+			"type": "gradle",
+			"id": "/workspaces/minecraft-plugincleanminecraft-plugin",
+			"script": "clean",
+			"description": "Deletes the build directory.",
+			"group": "build",
+			"project": "minecraft-plugin",
+			"buildFile": "/workspaces/minecraft-plugin/build.gradle",
+			"rootProject": "minecraft-plugin",
+			"projectFolder": "/workspaces/minecraft-plugin",
+			"workspaceFolder": "/workspaces/minecraft-plugin",
+			"args": "",
+			"javaDebug": false,
+			"problemMatcher": [
+				"$gradle"
+			],
+			"label": "gradle: clean"
 		}
 	]
 }
