@@ -181,7 +181,24 @@ public class PluginMain extends JavaPlugin {
     }
 
     this.getCommand(Constants.COMMAND_NAME).setExecutor(this);
+
+    if(!this.getConfig().isSet(Constants.RUNNERS_CONTAINER)) {
+      this.getLogger().warning(String.format(
+        "Section '%s' not found in config.yml, fill in configurations then do /%s load",
+        Constants.RUNNERS_CONTAINER, Constants.COMMAND_NAME
+      ));
+      this.getLogger().warning("Skipping remaining initializations");
+
+      return;
+    }
+
     boolean loaded = this.announceCommencement();
+
+    if(!loaded) {
+      this.getLogger().severe("Unable to recruit runners, staying idle");
+
+      return;
+    }
   }
 
   @Override
