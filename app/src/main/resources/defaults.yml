@@ -7,12 +7,16 @@ events:
     event:
       class: org.bukkit.event.server.ServerLoadEvent # Fully Qualified Class Name of Event
       priority: MONITOR # org.bukkit.event.EventPriority.*
+    # TODO Additional information passing as stdin?
     wants:
       - Type # TODO
     run:
+      # script or binary, also resolved against `workdir`
       exec: "start.sh"
+      # (default / omitted / null) points to server's pwd
       workdir: /srv/minecraft/worlds
-      announce: true; # Omitted if false
+      # Report event class as first cmdline arg, Omitted if false
+      announce: true
       args:
         - am
         - i
