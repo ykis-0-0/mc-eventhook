@@ -168,7 +168,8 @@ public class PluginMain extends JavaPlugin {
     // In case for first launch
     this.getDataFolder().mkdir();
     this.saveDefaultConfig();
-    this.getConfig().options().copyDefaults(false);
+    // It's default is already false
+    // this.getConfig().options().copyDefaults(false);
 
     // If the config.yml schema isn't compatible
     if(!this.checkConfSchema()) {
