@@ -1,0 +1,41 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "gradle",
+			"id": "/workspaces/minecraft-pluginapp:jarapp",
+			"script": "app:jar",
+			"description": "Assembles a jar archive containing the main classes.",
+			"group": "build",
+			"project": "app",
+			"buildFile": "/workspaces/minecraft-plugin/app/build.gradle",
+			"rootProject": "minecraft-plugin",
+			"projectFolder": "/workspaces/minecraft-plugin",
+			"workspaceFolder": "/workspaces/minecraft-plugin",
+			"args": "",
+			"javaDebug": false,
+			"problemMatcher": [
+				"$gradle"
+			],
+			"label": "gradle: app:jar"
+		},
+		{
+			"type": "gradle",
+			"id": "/workspaces/minecraft-pluginapp:cleanapp",
+			"script": "app:clean",
+			"description": "Deletes the build directory.",
+			"group": "build",
+			"project": "app",
+			"buildFile": "/workspaces/minecraft-plugin/app/build.gradle",
+			"rootProject": "minecraft-plugin",
+			"projectFolder": "/workspaces/minecraft-plugin",
+			"workspaceFolder": "/workspaces/minecraft-plugin",
+			"args": "",
+			"javaDebug": false,
+			"problemMatcher": [
+				"$gradle"
+			],
+			"label": "gradle: app:clean"
+		}
+	]
+}

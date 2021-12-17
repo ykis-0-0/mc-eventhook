@@ -1,0 +1,3 @@
+main: xxx.ykis.eventhook.PluginMain
+name: EventHookTest
+version: 0.1
