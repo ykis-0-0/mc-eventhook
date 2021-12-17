@@ -33,8 +33,7 @@ class ConfigHelper {
     Class<? extends Event> eventClass = null;
 
     try {
-      final Class<?> classInput = Class.forName(eventFQCN);
-      eventClass = classInput.asSubclass(Event.class);
+      eventClass = Class.forName(eventFQCN).asSubclass(Event.class);
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(String.format(
         "In config.yml[%s.%s]: Class not found: [%s]",
