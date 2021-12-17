@@ -45,7 +45,7 @@ public class PluginMain extends JavaPlugin {
   private Registry registry = null;
 
   private boolean checkConfSchema() {
-    YamlConfiguration configTemplate = YamlConfiguration.loadConfiguration(this.getTextResource("defaults.yml"));
+    YamlConfiguration configTemplate = YamlConfiguration.loadConfiguration(this.getTextResource("config.yml"));
     boolean permissible = true;
     boolean needSupplyDrop = false;
 
