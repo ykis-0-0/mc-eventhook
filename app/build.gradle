@@ -39,8 +39,14 @@ dependencies {
 
     // Add generator for plugin.yml
 
-    compileOnly 'org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT'
-    annotationProcessor 'org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT'
+    def depAnnotations = 'org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT'
+    compileOnly depAnnotations
+    annotationProcessor depAnnotations
+
+    // also enable for testing
+    testCompileOnly depAnnotations
+    testAnnotationProcessor depAnnotations
+
 }
 
 tasks.named('test') {

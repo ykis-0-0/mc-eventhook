@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 
+// For plugin.yml generation
 import org.bukkit.plugin.java.annotation.plugin.*;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import org.bukkit.plugin.PluginLoadOrder;
