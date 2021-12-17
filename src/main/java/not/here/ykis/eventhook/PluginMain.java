@@ -142,20 +142,18 @@ public class PluginMain extends JavaPlugin {
 
     if(action.equals("unload") || action.equals("reload")) {
       boolean result = this.endOfEvent();
-      if(result) {
-        sender.sendMessage("There is nothing left to unload");
-      } else {
-        sender.sendMessage("Configuration unloaded");
-      }
+      sender.sendMessage(result
+        ? "Configuration unloaded"
+        : "There is nothing left to unload"
+      );
     }
     if(action.equals("load") || action.equals("reload")) {
       this.reloadConfig();
       boolean result = this.announceCommencement();
-      if(result) {
-        sender.sendMessage("A loaded configuration exists");
-      } else{
-        sender.sendMessage("Configuration loaded");
-      }
+      sender.sendMessage(result
+        ? "Configuration loaded"
+        : "A loaded configuration exists"
+      );
     }
 
     return true;
