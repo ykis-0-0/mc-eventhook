@@ -167,6 +167,8 @@ public class PluginMain extends JavaPlugin {
   public void onEnable() {
     this.getLogger().info("Enabled!");
 
+    this.getCommand(Constants.COMMAND_NAME).setExecutor(this);
+
     // In case for first launch
     this.getDataFolder().mkdir();
     this.saveDefaultConfig();
@@ -179,8 +181,6 @@ public class PluginMain extends JavaPlugin {
       this.setEnabled(false);
       return;
     }
-
-    this.getCommand(Constants.COMMAND_NAME).setExecutor(this);
 
     if(!this.getConfig().isSet(Constants.RUNNERS_CONTAINER)) {
       this.getLogger().warning(String.format(
