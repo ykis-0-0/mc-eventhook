@@ -53,7 +53,10 @@ class Registry implements Listener {
         announce = reader.getAnnounce();
         execArgs = reader.getArgs();
       } catch (RuntimeException e) {
-        this.plugin.getLogger().severe(e.getMessage());
+        this.plugin.getLogger().severe(String.format(
+          "In config.yml[%s.%s]: %s",
+          Constants.RUNNERS_CONTAINER, applicantName, e.getMessage()
+        ));
         this.plugin.getLogger().warning("Entry Skipped");
         continue;
       }

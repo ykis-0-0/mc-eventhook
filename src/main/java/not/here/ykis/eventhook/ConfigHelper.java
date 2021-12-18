@@ -24,10 +24,7 @@ class ConfigHelper {
     final String eventFQCN = section.getString("event.class");
 
     if(eventFQCN == null) {
-      throw new RuntimeException(String.format(
-        "In config.yml[%s.%s]: Target Event not specified",
-        Constants.RUNNERS_CONTAINER, this.name
-      ));
+      throw new RuntimeException("Target Event not specified");
     }
 
     Class<? extends Event> eventClass = null;
@@ -36,20 +33,20 @@ class ConfigHelper {
       eventClass = Class.forName(eventFQCN).asSubclass(Event.class);
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(String.format(
-        "In config.yml[%s.%s]: Class not found: [%s]",
-        Constants.RUNNERS_CONTAINER, this.name, eventFQCN
+        "Class not found: [%s]",
+        eventFQCN
       ));
     } catch (ClassCastException e) {
       throw new RuntimeException(String.format(
-        "In config.yml[%s.%s]: Class [%s] is not (subclass of) [%s]",
-        Constants.RUNNERS_CONTAINER, this.name, eventFQCN, Event.class.getName()
+        "Class [%s] is not (subclass of) [%s]",
+        eventFQCN, Event.class.getName()
       ));
     }
 
     if(eventClass == null) { // Final Guard
       throw new RuntimeException(String.format(
-        "In config.yml[%s.%s]: Unable to retrieve class object: [%s]",
-        Constants.RUNNERS_CONTAINER, this.name, eventFQCN
+        "Unable to retrieve class object: [%s]",
+        eventFQCN
       ));
     }
 
@@ -60,10 +57,7 @@ class ConfigHelper {
     final String priorityName = section.getString("event.priority");
 
     if(priorityName == null) {
-      throw new RuntimeException(String.format(
-        "In config.yml[%s.%s]: Runner Priority not specified",
-        Constants.RUNNERS_CONTAINER, this.name
-      ));
+      throw new RuntimeException("Runner Priority not specified");
     }
 
     final EventPriority priority;
@@ -72,8 +66,8 @@ class ConfigHelper {
       priority = EventPriority.valueOf(priorityName);
     } catch (IllegalArgumentException e) {
       throw new RuntimeException(String.format(
-        "In config.yml[%s.%s]: [%s] is not a valid EventPriority",
-        Constants.RUNNERS_CONTAINER, this.name, priorityName
+        "[%s] is not a valid EventPriority",
+        priorityName
       ));
     }
 
@@ -84,10 +78,7 @@ class ConfigHelper {
     final String execPath = section.getString("run.exec");
 
     if(execPath == null) {
-      throw new RuntimeException(String.format(
-        "In config.yml[%s.%s]: Executable not specified",
-        Constants.RUNNERS_CONTAINER, this.name
-      ));
+      throw new RuntimeException("Executable not specified");
     }
 
     return execPath;
