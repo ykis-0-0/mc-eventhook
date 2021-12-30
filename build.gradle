@@ -9,6 +9,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.10'
 }
 
 repositories {
@@ -24,11 +25,14 @@ repositories {
 
 dependencies {
 
+    // Start using Kotlin
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+
     // Use MockBukkit for testing.
     testImplementation 'com.github.seeseemelk:MockBukkit-v1.15:0.3.1-SNAPSHOT'
     // Which,
     // Use JUnit Jupiter for testing.
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
 
     // // This dependency is used by the application.
     // implementation 'com.google.guava:guava:30.1.1-jre'
@@ -62,4 +66,11 @@ java {
 base {
     distsDirectory = layout.buildDirectory
     libsDirectory = layout.buildDirectory
+}
+
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = 1.8
+    }
 }
