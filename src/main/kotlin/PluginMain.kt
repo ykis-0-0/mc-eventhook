@@ -11,12 +11,10 @@ import java.io.IOException
 import org.bukkit.configuration.file.YamlConfiguration
 
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 
 // For plugin.yml generation
 import org.bukkit.plugin.java.annotation.plugin.*
 import org.bukkit.plugin.java.annotation.plugin.author.Author
-import org.bukkit.plugin.java.annotation.command.*
 import org.bukkit.plugin.PluginLoadOrder
 
 // For MockBukkit
@@ -34,17 +32,11 @@ import org.bukkit.plugin.PluginDescriptionFile
 @ApiVersion(ApiVersion.Target.v1_15)
 @Author(value = "ykis-0-0")
 @LogPrefix(value = "EventHook(Test)")
-@LoadOrder(PluginLoadOrder.STARTUP) // Commands
-@Commands(
-  Command(
-    name = Constants.COMMAND_NAME,
-    desc = "Control the activation state of hooked scripts",
-    usage = "Usage: /<command> <load | unload | reload | help>"
-  )
-)
+@LoadOrder(PluginLoadOrder.STARTUP)
 class PluginMain : JavaPlugin {
 
   private var registry: Registry? = null
+  private val commandManager: CommandManager = CommandManager()
 
   private fun checkConfSchema(): Boolean {
     val configTemplate = YamlConfiguration.loadConfiguration(getTextResource("config.yml")!!)
@@ -119,45 +111,57 @@ class PluginMain : JavaPlugin {
   }
 
   //#endregion
-  override fun onCommand(sender: CommandSender, command: org.bukkit.command.Command, label: String, args: Array<String>): Boolean {
-    if (sender is Player) {
-      sender.sendMessage("This command is intended for use in server console only")
-      return false
-    }
 
-    if (args.size != 1) {
-      sender.sendMessage(String.format(
-        "Too %s arguments!",
-        if (@Suppress("ReplaceSizeZeroCheckWithIsEmpty") args.size < 1) "few" else "many"
-      ))
-      return false
-    }
+  private fun prepCommand() {
+    val wrapper: ((CommandSender) -> Boolean).() -> (String) -> (CommandSender, Array<String>) -> Boolean
+        = wrapped@ { { callSite@ { sender, args -> // Using _ since we don't need to use the label for now
+          if (args.isNotEmpty()) {
+            sender.sendMessage("Too many arguments")
+            return@callSite false
+          }
 
-    val action = args[0]
-    if (!listOf("load", "unload", "reload").contains(action)) {
-      if (action != "help") sender.sendMessage("%s is not a valid action".format(action))
-      return false
-    }
+          this@wrapped(sender)
+        } } }
 
-    if (action == "unload" || action == "reload") {
-      val result = endOfEvent()
-      sender.sendMessage(if(result) "Configuration unloaded" else "There is nothing left to unload")
-    }
-
-    if (action == "load" || action == "reload") {
+    val loadAction: (CommandSender) -> Boolean = { sender ->
       this.reloadConfig()
+      val result = this.announceCommencement()
 
-      val result = announceCommencement()
-      sender.sendMessage(if(result) "Configuration loaded" else "A loaded configuration exists")
+      sender.sendMessage(
+        if(result) "Configuration loaded"
+        else "A loaded configuration already exists"
+      )
+      true
     }
 
-    return true
+    val unloadAction: (CommandSender) -> Boolean = { sender ->
+      val result = this.endOfEvent()
+      sender.sendMessage(
+        if(result) "Configuration unloaded"
+        else "There is nothing left to unload"
+      )
+
+      true
+    }
+
+    val reloadAction: (CommandSender) -> Boolean = { sender ->
+      unloadAction(sender)
+      loadAction(sender)
+      true
+    }
+
+    this.commandManager.register("help", { _: CommandSender -> false }.wrapper())
+    this.commandManager.register("load", loadAction.wrapper())
+    this.commandManager.register("unload", unloadAction.wrapper())
+    this.commandManager.register("reload", reloadAction.wrapper())
+
+    this.getCommand(Constants.COMMAND_NAME)!!.setExecutor(this.commandManager)
   }
 
   //#region External Lifecycle compliance
   override fun onEnable() {
     this.logger.info("Enabled!")
-    this.getCommand(Constants.COMMAND_NAME)!!.setExecutor(this)
+    this.prepCommand()
 
     // In case for first launch
     this.dataFolder.mkdir()
