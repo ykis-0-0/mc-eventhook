@@ -154,7 +154,6 @@ class PluginMain : JavaPlugin {
     return true
   }
 
-  //#endregion
   //#region External Lifecycle compliance
   override fun onEnable() {
     this.logger.info("Enabled!")
@@ -194,7 +193,9 @@ class PluginMain : JavaPlugin {
   //#endregion
 
   //#region Constructors for MockBukkit
+  @Suppress("Unused")
   constructor() : super()
-  constructor(loader: JavaPluginLoader?, description: PluginDescriptionFile?, dataFolder: File?, file: File?) : super(loader!!, description!!, dataFolder!!, file!!)
+  @Suppress("Unused")
+  constructor(loader: JavaPluginLoader, description: PluginDescriptionFile, dataFolder: File, file: File) : super(loader, description, dataFolder, file)
   //#endregion
 }
