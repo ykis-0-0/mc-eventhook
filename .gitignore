@@ -1,8 +1,8 @@
 # Ignore Gradle project-specific cache directory
-.gradle
+/.gradle
 
 # Ignore Gradle build output directory
-build
+/build
 
 # Ignore binary directory
 /bin
@@ -11,3 +11,6 @@ build
 /gradle/wrapper
 /gradlew
 /gradlew.bat
+
+# I don't think IntelliJ IDEA is suitable for me :/
+/.idea
