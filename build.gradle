@@ -23,10 +23,18 @@ repositories {
 
 }
 
+configurations {
+    bundled
+    // Or else the JAR will be FAT like an American
+    bundled.transitive = false
+}
+
 dependencies {
 
     // Start using Kotlin
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    def depKotlin = 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    implementation depKotlin
+    bundled depKotlin
 
     // Use MockBukkit for testing.
     testImplementation 'com.github.seeseemelk:MockBukkit-v1.15:0.3.1-SNAPSHOT'
@@ -73,4 +81,8 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
     kotlinOptions {
         jvmTarget = 1.8
     }
+}
+
+jar {
+    from configurations.bundled.asFileTree.files.collect { zipTree(it) }
 }
