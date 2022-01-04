@@ -123,20 +123,20 @@ class PluginMain : JavaPlugin {
           this@wrapped(sender)
         } } }
 
-    val loadAction: (CommandSender) -> Boolean = { sender ->
+    val loadAction: (CommandSender) -> Boolean = {
       this.reloadConfig()
       val result = this.announceCommencement()
 
-      sender.sendMessage(
+      it.sendMessage(
         if(result) "Configuration loaded"
         else "A loaded configuration already exists"
       )
       true
     }
 
-    val unloadAction: (CommandSender) -> Boolean = { sender ->
+    val unloadAction: (CommandSender) -> Boolean = {
       val result = this.endOfEvent()
-      sender.sendMessage(
+      it.sendMessage(
         if(result) "Configuration unloaded"
         else "There is nothing left to unload"
       )
@@ -144,9 +144,9 @@ class PluginMain : JavaPlugin {
       true
     }
 
-    val reloadAction: (CommandSender) -> Boolean = { sender ->
-      unloadAction(sender)
-      loadAction(sender)
+    val reloadAction: (CommandSender) -> Boolean = {
+      unloadAction(it)
+      loadAction(it)
       true
     }
 
