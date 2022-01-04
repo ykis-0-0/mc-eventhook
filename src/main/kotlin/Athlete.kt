@@ -13,7 +13,7 @@ internal class Athlete(
   private val plugin: Plugin, private val name: String,
   private val eventClass: Class<out Event>, private val eventPriority: EventPriority,
   private val execPath: String, private val workDir: java.io.File?,
-  private val announce: Boolean, private val args: List<String>
+  private val announce: Boolean, private val args: List<String>,
 ) : EventExecutor, Runnable {
 
   // REVIEW: do we need to expose the real triggered event?
@@ -49,14 +49,14 @@ internal class Athlete(
     "Runner %s on %s finished %s with exit code of %d (seems %s)".format(
       name,
       eventClass.name, execPath,
-      exitCode, if (exitCode == 0) "okay" else "failed"
+      exitCode, if(exitCode == 0) "okay" else "failed"
     )
   )
 
   /** Construct the command line from the arguments and options given  */
   private fun prepCmdline(): List<String> = buildList {
     add(execPath)
-    if (announce) add(eventClass.name)
+    if(announce) add(eventClass.name)
     addAll(this@Athlete.args)
   }
 
@@ -70,7 +70,7 @@ internal class Athlete(
     this.workDir?.let { buildur.directory(it) }
 
     @Suppress("CanBeVal")
-    var exitCode:Int = -1
+    var exitCode: Int = -1
 
     try {
       val proc = buildur.start()
@@ -79,7 +79,7 @@ internal class Athlete(
       val side = LoggingHelper(plugin, name, Level.SEVERE, proc.errorStream).apply { Thread(this@apply).start() }
 
       exitCode = this.getExitCode(proc) // Fuck you Java
-    } catch (e: java.io.IOException) {
+    } catch(e: java.io.IOException) {
       e.printStackTrace()
       this.plugin.logger.severe("Unable to run process")
     }
@@ -95,7 +95,7 @@ internal class Athlete(
    */
   private fun getExitCode(runner: Process): Int = try {
     runner.waitFor()
-  } catch (e: java.lang.InterruptedException) {
+  } catch(e: java.lang.InterruptedException) {
     e.printStackTrace()
     plugin.logger.severe("Interrupted, disquallifying the runner")
     runner.destroy()

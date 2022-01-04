@@ -12,11 +12,11 @@ internal class ConfigHelper(private val plugin: Plugin, private val section: Con
   // Final Guard
   val event: Class<out Event>
     get() {
-      val eventFQCN = section.getString("event.class") ?: throw NoSuchElementException("Target Event not specified")
+      val eventFQCN = this.section.getString("event.class") ?: throw NoSuchElementException("Target Event not specified")
       val eventClass: Class<out Event> = try {
         Class.forName(eventFQCN).asSubclass(Event::class.java)
-      } catch (e: Exception) {
-        val exception = when (e) {
+      } catch(e: Exception) {
+        val exception = when(e) {
           is ClassNotFoundException -> IllegalArgumentException("Class not found: [%s]".format(eventFQCN))
           is ClassCastException -> IllegalArgumentException("Class [%s] is not (subclass of) ${Event::class.java.name}".format(eventFQCN))
           else -> RuntimeException("Unknown Error when retrieving class %s".format(eventFQCN))
@@ -28,20 +28,21 @@ internal class ConfigHelper(private val plugin: Plugin, private val section: Con
 
   val priority: EventPriority
     get() {
-      val priorityName = section.getString("event.priority") ?: throw NoSuchElementException("Runner Priority not specified")
+      val priorityName = this.section.getString("event.priority")
+        ?: throw NoSuchElementException("Runner Priority not specified")
       return try {
         EventPriority.valueOf(priorityName)
-      } catch (e: IllegalArgumentException) {
+      } catch(e: IllegalArgumentException) {
         throw IllegalArgumentException("[%s] is not a valid EventPriority".format(priorityName))
       }
     }
   val execPath: String
-    get() = section.getString("run.exec") ?: throw NoSuchElementException("Executable not specified")
+    get() = this.section.getString("run.exec") ?: throw NoSuchElementException("Executable not specified")
 
   val workDir: File? by lazy {
-    val path = section.getString("run.workdir") ?: return@lazy null
+    val path = this.section.getString("run.workdir") ?: return@lazy null
     val maybeDir = File(path)
-    if (!maybeDir.isFile) return@lazy maybeDir
+    if(!maybeDir.isFile) return@lazy maybeDir
     with(this.plugin.logger) {
       severe("In config.yml [%s.%s]: Working Directory [%s] specified but not a valid directory".format(
         Constants.RUNNERS_CONTAINER, this.name, path
@@ -53,8 +54,8 @@ internal class ConfigHelper(private val plugin: Plugin, private val section: Con
   }
 
   val announce: Boolean
-    get() = section.getBoolean("run.announce", false)
+    get() = this.section.getBoolean("run.announce", false)
 
   val args: List<String>
-    get() = section.getStringList("run.args")
+    get() = this.section.getStringList("run.args")
 }
