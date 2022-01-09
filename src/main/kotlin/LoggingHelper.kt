@@ -7,9 +7,15 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 /** A helper class for outsourcing the relaying of logs from the [Athlete]s  */
-internal class LoggingHelper internal constructor(plugin: Plugin, private val target: String, private val level: Level, stream: InputStream) : Runnable {
+internal class LoggingHelper internal constructor(
+    private val logger: Logger,
+    private val target: String,
+    private val level: Level,
+    stream: InputStream
+) : Runnable {
+    internal constructor(plugin: Plugin, target: String, level: Level, stream: InputStream)
+      : this(plugin.logger, target, level, stream)
 
-    private val logger: Logger = plugin.logger
     private val lineReader: java.io.BufferedReader = stream.bufferedReader()
     private var shouldStop: Boolean = false
 

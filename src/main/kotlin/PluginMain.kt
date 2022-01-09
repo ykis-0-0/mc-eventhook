@@ -109,7 +109,6 @@ class PluginMain : JavaPlugin {
 
     return true
   }
-
   //#endregion
 
   private fun prepCommand() {
