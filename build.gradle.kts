@@ -21,27 +21,22 @@ repositories {
   maven { url = uri("https://jitpack.io") }
 }
 
-val bundled by configurations.creating {
+val bundled: Configuration by configurations.creating {
   this.extendsFrom(configurations.implementation.get())
   this.isTransitive = false
 }
 
 dependencies {
-
   // Start using Kotlin
   val depKotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
   bundled(depKotlin) {
     this.isTransitive = true
   }
-
-  // And its reflection Module
+  // its reflection Module
   implementation("org.jetbrains.kotlin:kotlin-reflect")
-
-  // Use MockBukkit for testing.
-  testImplementation("com.github.seeseemelk:MockBukkit-v1.15:0.3.1-SNAPSHOT")
-  // Which,
-  // Use JUnit Jupiter for testing.
-  testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+  // and scripting support
+  implementation("org.jetbrains.kotlin:kotlin-scripting-common")
+  implementation("org.jetbrains.kotlin:kotlin-scripting-jvm")
 
   // // This dependency is used by the application.
   // implementation("com.google.guava:guava:30.1.1-jre")
@@ -51,14 +46,16 @@ dependencies {
   compileOnly("org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT")
 
   // Add generator for plugin.yml
-
   val depAnnotations = "org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT"
   compileOnly(depAnnotations)
   annotationProcessor(depAnnotations)
-
-  // also enable for testing
+  // and also in tests
   testCompileOnly(depAnnotations)
   testAnnotationProcessor(depAnnotations)
+
+  // Use MockBukkit and JUnit for testing.
+  testImplementation("com.github.seeseemelk:MockBukkit-v1.15:0.3.1-SNAPSHOT")
+  testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
 }
 
 tasks.test {
@@ -79,10 +76,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 tasks.jar {
   from(bundled.asFileTree.files.map { zipTree(it) })
-
-  duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.WARN
-
-  // this.destinationDirectory.set(layout.buildDirectory)
+  duplicatesStrategy = DuplicatesStrategy.WARN
 }
 
 base {
