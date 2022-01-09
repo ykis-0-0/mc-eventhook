@@ -44,23 +44,23 @@ class PluginMain : JavaPlugin {
     var needSupplyDrop = false
 
     val epochUsed = configTemplate.getInt("schema.epoch")
-    if (epochUsed != this.config.getInt("schema.epoch")) {
+    if(epochUsed != this.config.getInt("schema.epoch")) {
       this.logger.warning("The existing config.yml is from another epoch, copying the new template.")
       permissible = false
       needSupplyDrop = true
     }
 
     val revisionUsed = configTemplate.getInt("schema.revision")
-    if (revisionUsed != this.config.getInt("schema.revision")) {
+    if(revisionUsed != this.config.getInt("schema.revision")) {
       this.logger.warning("A newer revision of config.yml exists, copy a new template.")
       needSupplyDrop = true // revision change isn't blocking
     }
 
-    if (needSupplyDrop) {
+    if(needSupplyDrop) {
       try {
         configTemplate.save(File(this.dataFolder, "config.yml.newtemplate"))
         this.logger.info("New template saved as config.yml.newtemplate")
-      } catch (e: IOException) {
+      } catch(e: IOException) {
         e.printStackTrace()
         this.logger.severe("Could not save new configuration template")
       }
@@ -170,12 +170,12 @@ class PluginMain : JavaPlugin {
     // this.getConfig().options().copyDefaults(false);
 
     // If the config.yml schema isn't compatible
-    if (!this.checkConfSchema()) {
+    if(!this.checkConfSchema()) {
       this.logger.warning("Disabling myself, see you next time~")
       this.isEnabled = false
       return
     }
-    if (!this.config.isSet(Constants.RUNNERS_CONTAINER)) {
+    if(!this.config.isSet(Constants.RUNNERS_CONTAINER)) {
       this.logger.warning(String.format(
         "Section '%s' not found in config.yml, fill in configurations then do /%s load",
         Constants.RUNNERS_CONTAINER, Constants.COMMAND_NAME
@@ -184,7 +184,7 @@ class PluginMain : JavaPlugin {
       return
     }
     val loaded = this.announceCommencement()
-    if (!loaded) {
+    if(!loaded) {
       this.logger.severe("Unable to recruit runners, staying idle")
       return
     }
