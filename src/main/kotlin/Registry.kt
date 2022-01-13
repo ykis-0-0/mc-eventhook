@@ -1,15 +1,14 @@
 package not.here.ykis.eventhook
 
-import org.bukkit.plugin.Plugin
+import java.io.File
+import java.util.ArrayList
 
-import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.plugin.Plugin
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-
-import java.io.File
-import java.util.ArrayList
+import org.bukkit.configuration.ConfigurationSection
 
 /** The registry, as its name suggests, builds, keeps record of and deregisters individual [Athlete]s  */
 internal class Registry(private val plugin: Plugin) : Listener {

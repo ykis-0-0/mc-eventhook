@@ -1,12 +1,13 @@
 package not.here.ykis.eventhook
 
-import org.bukkit.event.EventPriority
-import org.bukkit.plugin.EventExecutor
-import org.bukkit.Bukkit
-import org.bukkit.event.Event
-import org.bukkit.event.Listener
-import org.bukkit.plugin.Plugin
 import java.util.logging.Level
+
+import org.bukkit.Bukkit
+import org.bukkit.plugin.Plugin
+import org.bukkit.event.Event
+import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
+import org.bukkit.plugin.EventExecutor
 
 /** A single executor, reacting to a single event, and running a single task  */
 internal class Athlete(
