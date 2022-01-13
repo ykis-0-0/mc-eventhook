@@ -115,7 +115,7 @@ class ExternalRunner<Te : org.bukkit.event.Event>(name: String) : BaseRunner<Te>
         append(" in directory %s".format(this@ExternalRunner.workdir))
 
       append(" with arguments [%s]".format(
-        args.joinToString(" ")
+        args.joinToString("; ")
       ))
     }
     logger.info(output)

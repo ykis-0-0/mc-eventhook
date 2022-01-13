@@ -35,78 +35,23 @@ import org.bukkit.plugin.PluginDescriptionFile
 @LoadOrder(PluginLoadOrder.STARTUP)
 class PluginMain : JavaPlugin {
 
-  private var registry: Registry? = null
+  private val registry: Registry = Registry(this)
   private val commandManager: CommandManager = CommandManager()
-
-  private fun checkConfSchema(): Boolean {
-    val configTemplate = YamlConfiguration.loadConfiguration(getTextResource("config.yml")!!)
-    var permissible = true
-    var needSupplyDrop = false
-
-    val epochUsed = configTemplate.getInt("schema.epoch")
-    if(epochUsed != this.config.getInt("schema.epoch")) {
-      this.logger.warning("The existing config.yml is from another epoch, copying the new template.")
-      permissible = false
-      needSupplyDrop = true
-    }
-
-    val revisionUsed = configTemplate.getInt("schema.revision")
-    if(revisionUsed != this.config.getInt("schema.revision")) {
-      this.logger.warning("A newer revision of config.yml exists, copy a new template.")
-      needSupplyDrop = true // revision change isn't blocking
-    }
-
-    if(needSupplyDrop) {
-      try {
-        configTemplate.save(File(this.dataFolder, "config.yml.newtemplate"))
-        this.logger.info("New template saved as config.yml.newtemplate")
-      } catch(e: IOException) {
-        e.printStackTrace()
-        this.logger.severe("Could not save new configuration template")
-      }
-    }
-
-    return permissible
-  }
 
   //#region Internal Lifecycle management
   private fun announceCommencement(): Boolean {
-    if (this.registry != null) {
-      this.logger.warning("There are runners standing by, please dismiss them before reload")
-      return false
-    }
+    val participants = this.registry.processApplications()
 
-    if (!this.config.isConfigurationSection(Constants.RUNNERS_CONTAINER)) {
-      this.logger.severe(String.format(
-        "In config.yml[%s]: Type mismatch, Map expected",
-        Constants.RUNNERS_CONTAINER
-      ))
-    }
+    this.logger.info("%d handler(s) parsed and registered".format(participants))
 
-    val registry = Registry(this)
-    val applicationForms = this.config.getConfigurationSection(Constants.RUNNERS_CONTAINER)!! // Checked in l#88
-    val countAthletes = registry.processApplications(applicationForms)
-
-    this.logger.info("%d applications received, of which %d are approved".format(
-      applicationForms.getKeys(false).size, countAthletes
-    ))
-
-    this.registry = registry
-    this.registry!!.makeReady()
+    this.registry.makeReady()
     this.logger.info("All runners on their position.")
 
     return true
   }
 
   private fun endOfEvent(): Boolean {
-    if (this.registry == null) {
-      this.logger.warning("There is no waiting runners, no need to demobilize")
-      return false
-    }
-
-    this.registry!!.dismissParticipants()
-    this.registry = null
-
+    this.registry.dismissParticipants()
     return true
   }
   //#endregion
@@ -164,24 +109,8 @@ class PluginMain : JavaPlugin {
 
     // In case for first launch
     this.dataFolder.mkdir()
-    this.saveDefaultConfig()
-    // It's default is already false
-    // this.getConfig().options().copyDefaults(false);
+    this.saveResource("config.kts", false)
 
-    // If the config.yml schema isn't compatible
-    if(!this.checkConfSchema()) {
-      this.logger.warning("Disabling myself, see you next time~")
-      this.isEnabled = false
-      return
-    }
-    if(!this.config.isSet(Constants.RUNNERS_CONTAINER)) {
-      this.logger.warning(String.format(
-        "Section '%s' not found in config.yml, fill in configurations then do /%s load",
-        Constants.RUNNERS_CONTAINER, Constants.COMMAND_NAME
-      ))
-      this.logger.warning("Skipping remaining initializations")
-      return
-    }
     val loaded = this.announceCommencement()
     if(!loaded) {
       this.logger.severe("Unable to recruit runners, staying idle")
