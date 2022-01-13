@@ -13,7 +13,7 @@ import org.bukkit.plugin.java.annotation.command.*
     usage = "Usage: /<command> <load | unload | reload | help>"
   )
 )
-internal class CommandManager : CommandExecutor {
+class CommandManager : CommandExecutor {
   private val subCommands: MutableMap<String, (CommandSender, Array<String>) -> Boolean> = HashMap()
 
   override fun onCommand(sender: CommandSender, command: org.bukkit.command.Command, label: String, args: Array<String>): Boolean {
