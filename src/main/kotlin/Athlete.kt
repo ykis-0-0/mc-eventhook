@@ -17,10 +17,11 @@ internal class Athlete(
   private val announce: Boolean, private val args: List<String>,
 ) : EventExecutor, Runnable {
 
-  // REVIEW: do we need to expose the real triggered event?
-  override fun execute(listener: Listener, event: Event) {
-    Thread(this).start()
-  }
+  override fun toString(): String = "Runner %s [%s %s] => \"%s\" (%s)".format(
+    name,
+    eventPriority.name, eventClass.name,
+    execPath, args.joinToString("; ")
+  )
 
   /**
    * Register itself as an [EventExecutor] of the specified [Event]
@@ -29,12 +30,6 @@ internal class Athlete(
   fun onMyMark(commander: Registry) {
     Bukkit.getPluginManager().registerEvent(eventClass, commander, eventPriority, this, plugin)
   }
-
-  override fun toString(): String = "Runner %s [%s %s] => \"%s\" (%s)".format(
-    name,
-    eventPriority.name, eventClass.name,
-    execPath, args.joinToString("; ")
-  )
 
   /** Log its start  */
   private fun reportStart() = plugin.logger.info(
@@ -59,6 +54,11 @@ internal class Athlete(
     add(execPath)
     if(announce) add(eventClass.name)
     addAll(this@Athlete.args)
+  }
+
+  // REVIEW: do we need to expose the real triggered event?
+  override fun execute(listener: Listener, event: Event) {
+    Thread(this).start()
   }
 
   /** Start the task, while also setting up [LoggingHelper]s to relay the programs output to the log  */
