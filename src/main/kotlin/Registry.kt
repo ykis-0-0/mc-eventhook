@@ -11,7 +11,7 @@ import org.bukkit.event.Listener
 import org.bukkit.configuration.ConfigurationSection
 
 /** The registry, as its name suggests, builds, keeps record of and deregisters individual [Athlete]s  */
-internal class Registry(private val plugin: Plugin) : Listener {
+class Registry(private val plugin: Plugin) : Listener {
 
   private val theRegister: ArrayList<Athlete> = ArrayList()
 
