@@ -33,10 +33,11 @@ dependencies {
     this.isTransitive = true
   }
   // its reflection Module
-  implementation("org.jetbrains.kotlin:kotlin-reflect")
+  // implementation("org.jetbrains.kotlin:kotlin-reflect")
   // and scripting support
   implementation("org.jetbrains.kotlin:kotlin-scripting-common")
   implementation("org.jetbrains.kotlin:kotlin-scripting-jvm")
+  implementation("org.jetbrains.kotlin:kotlin-scripting-jvm-host")
 
   // // This dependency is used by the application.
   // implementation("com.google.guava:guava:30.1.1-jre")
