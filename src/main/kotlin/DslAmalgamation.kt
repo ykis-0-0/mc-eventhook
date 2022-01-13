@@ -1,39 +1,45 @@
 package not.here.ykis.eventhook
 
+import java.util.logging.Logger
+import java.util.logging.Level
+
+import org.bukkit.event.Event
+import org.bukkit.event.EventPriority
+
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE)
 @DslMarker
 private annotation class HandlerDsl
 
-private typealias HandlerParsed<T> = (@HandlerDsl T).(java.util.logging.Logger) -> Unit
+private typealias HandlerParsed<T> = (@HandlerDsl T).(Logger) -> Unit
 private typealias EventPredicateParsed<T> = (@HandlerDsl T).() -> Boolean
 private typealias ArgvGenParsed<T> = (@HandlerDsl T).() -> List<String>
 
-private typealias Handler<T> = (java.util.logging.Logger) -> (@HandlerDsl T) -> Unit
+private typealias Handler<T> = (Logger) -> (@HandlerDsl T) -> Unit
 private typealias EventPredicate<T> = (@HandlerDsl T) -> Boolean
 private typealias ArgvGen<T> = (@HandlerDsl T) -> List<String>
 
-data class AthleteSpec<Te: org.bukkit.event.Event>(
+data class AthleteSpec<Te: Event>(
   val name: String,
   val eventClass: Class<Te>,
-  val priority: org.bukkit.event.EventPriority,
+  val priority: EventPriority,
   val predicate: EventPredicate<Te>,
   val closure: Handler<Te>,
 )
 
 @HandlerDsl
-sealed class BaseRunner<Te : org.bukkit.event.Event>(protected val listenerName: String) {
+sealed class BaseRunner<Te : Event>(protected val listenerName: String) {
   abstract val callable: Handler<Te>
 }
 
-class ScriptedRunner<Te : org.bukkit.event.Event>(private val block: HandlerParsed<Te>, name: String) : BaseRunner<Te>(name) {
+class ScriptedRunner<Te : Event>(private val block: HandlerParsed<Te>, name: String) : BaseRunner<Te>(name) {
   override val callable: Handler<Te>
     get() = { logger ->
-      val nestedLogger = object: java.util.logging.Logger(null, null) {
+      val nestedLogger = object: Logger(null, null) {
         private val prefix = "=> [%s]".format(this@ScriptedRunner.listenerName)
 
         init {
           this.parent = logger
-          this.level = java.util.logging.Level.ALL
+          this.level = Level.ALL
         }
 
         override fun log(record: java.util.logging.LogRecord) {
@@ -46,14 +52,14 @@ class ScriptedRunner<Te : org.bukkit.event.Event>(private val block: HandlerPars
     }
 }
 
-class ExternalRunner<Te : org.bukkit.event.Event>(name: String) : BaseRunner<Te>(name) {
+class ExternalRunner<Te : Event>(name: String) : BaseRunner<Te>(name) {
   lateinit var executable: String
   lateinit var workdir: String
   private var argvGen: ArgvGen<Te> = { emptyList() }
 
   override val callable: Handler<Te>
     get() = { logger ->
-      val watcherFactory = { level: java.util.logging.Level, stream: java.io.InputStream ->
+      val watcherFactory = { level: Level, stream: java.io.InputStream ->
         LoggingHelper(logger, this@ExternalRunner.listenerName, level, stream)
       }
 
@@ -76,8 +82,8 @@ class ExternalRunner<Te : org.bukkit.event.Event>(name: String) : BaseRunner<Te>
 
         // Attach the process' stdout and stderr
         setOf(
-          java.util.logging.Level.INFO to process.inputStream,
-          java.util.logging.Level.SEVERE to process.errorStream,
+          Level.INFO to process.inputStream,
+          Level.SEVERE to process.errorStream,
         ).forEach { (level, stream) ->
           Thread(watcherFactory(level, stream)).start()
         }
@@ -92,7 +98,7 @@ class ExternalRunner<Te : org.bukkit.event.Event>(name: String) : BaseRunner<Te>
    * Use working directory if it's not a file,
    * Leaving it to fail at runtime otherwise
    */
-  private fun assignWorkDir(builder: ProcessBuilder, logger: java.util.logging.Logger) {
+  private fun assignWorkDir(builder: ProcessBuilder, logger: Logger) {
     if(!this::workdir.isInitialized) return
 
     val handle = java.io.File(this.workdir)
@@ -104,7 +110,7 @@ class ExternalRunner<Te : org.bukkit.event.Event>(name: String) : BaseRunner<Te>
     builder.directory(handle)
   }
 
-  private fun announceArgs(logger: java.util.logging.Logger, args: List<String>) {
+  private fun announceArgs(logger: Logger, args: List<String>) {
     val output = buildString {
       append("Runner %s is starting process %s".format(
         this@ExternalRunner.listenerName,
@@ -121,7 +127,7 @@ class ExternalRunner<Te : org.bukkit.event.Event>(name: String) : BaseRunner<Te>
     logger.info(output)
   }
 
-  private fun announceExitCode(logger: java.util.logging.Logger, event: org.bukkit.event.Event, exitCode: Int) {
+  private fun announceExitCode(logger: Logger, event: Event, exitCode: Int) {
     logger.info(
       "Runner %s on %s finished %s with exit code of %d (seems %s)".format(
         this@ExternalRunner.listenerName,
@@ -143,9 +149,9 @@ class ExternalRunner<Te : org.bukkit.event.Event>(name: String) : BaseRunner<Te>
 }
 
 @HandlerDsl
-class HandlerBuilder<Te: org.bukkit.event.Event>(
+class HandlerBuilder<Te: Event>(
   private val eventClass: Class<Te>,
-  private val priority: org.bukkit.event.EventPriority,
+  private val priority: EventPriority,
   private val name: String,
 ) {
   private lateinit var predicate: EventPredicateParsed<Te>
