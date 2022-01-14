@@ -29,8 +29,6 @@ public class PluginWrapper extends JavaPlugin {
   @Override
   public void onLoad() {
     this.controller.registerSubcommands(this.cmdDispatcher);
-    //noinspection ConstantConditions
-    this.getCommand(Constants.COMMAND_NAME).setExecutor(this.cmdDispatcher);
 
     // In case for first launch
     //noinspection ResultOfMethodCallIgnored
@@ -40,6 +38,8 @@ public class PluginWrapper extends JavaPlugin {
   //#region External Lifecycle compliance
   @Override
   public void onEnable() {
+    //noinspection ConstantConditions
+    this.getCommand(Constants.COMMAND_NAME).setExecutor(this.cmdDispatcher);
     // Provide an explanation if required
     this.saveResource("config.kts", false);
 
