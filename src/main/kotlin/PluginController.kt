@@ -6,9 +6,6 @@ package not.here.ykis.eventhook
 import org.bukkit.plugin.java.JavaPlugin
 
 import java.io.File
-import java.io.IOException
-
-import org.bukkit.configuration.file.YamlConfiguration
 
 import org.bukkit.command.CommandSender
 
@@ -33,10 +30,10 @@ import org.bukkit.plugin.PluginDescriptionFile
 @Author(value = "ykis-0-0")
 @LogPrefix(value = "EventHook(Test)")
 @LoadOrder(PluginLoadOrder.STARTUP)
-class PluginMain : JavaPlugin {
+class PluginController : JavaPlugin {
 
   private val registry: Registry = Registry(this)
-  private val commandManager: CommandManager = CommandManager()
+  private val commandDispatcher: CommandDispatcher = CommandDispatcher()
 
   //#region Internal Lifecycle management
   private fun announceCommencement(): Boolean {
@@ -94,12 +91,12 @@ class PluginMain : JavaPlugin {
       true
     }
 
-    this.commandManager.register("help", { _: CommandSender -> false }.wrapper())
-    this.commandManager.register("load", loadAction.wrapper())
-    this.commandManager.register("unload", unloadAction.wrapper())
-    this.commandManager.register("reload", reloadAction.wrapper())
+    this.commandDispatcher.register("help", { _: CommandSender -> false }.wrapper())
+    this.commandDispatcher.register("load", loadAction.wrapper())
+    this.commandDispatcher.register("unload", unloadAction.wrapper())
+    this.commandDispatcher.register("reload", reloadAction.wrapper())
 
-    this.getCommand(Constants.COMMAND_NAME)!!.setExecutor(this.commandManager)
+    this.getCommand(Constants.COMMAND_NAME)!!.setExecutor(this.commandDispatcher)
   }
 
   //#region External Lifecycle compliance
