@@ -17,6 +17,8 @@ import org.bukkit.event.Listener
 class Registry(private val plugin: Plugin) : Listener {
 
   private var theRegister: MutableSet<Athlete<*>> = mutableSetOf()
+  val isLoaded: Boolean
+    get() = !this.theRegister.isEmpty()
 
   // May be able to extract into a standalone ConfigManager if we need to support a multi-file structure
   /**

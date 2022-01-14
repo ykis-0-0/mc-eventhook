@@ -11,13 +11,13 @@ public class TestMain {
   @SuppressWarnings(value = "unused") // It's not time to be a proper warning
   private ServerMock server;
   @SuppressWarnings(value = "unused") // It's not time to be a proper warning
-  private PluginMain plugin;
+  private PluginWrapper plugin;
 
   @BeforeEach
   public void setUp() {
     this.server = MockBukkit.mock();
 
-    this.plugin = MockBukkit.load(PluginMain.class);
+    this.plugin = MockBukkit.load(PluginWrapper.class);
   }
 
   @AfterEach

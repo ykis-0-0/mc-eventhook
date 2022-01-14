@@ -3,40 +3,21 @@
  */
 package not.here.ykis.eventhook
 
-import org.bukkit.plugin.java.JavaPlugin
-
-import java.io.File
-
+import org.bukkit.plugin.Plugin
 import org.bukkit.command.CommandSender
 
-// For plugin.yml generation
-import org.bukkit.plugin.java.annotation.plugin.*
-import org.bukkit.plugin.java.annotation.plugin.author.Author
-import org.bukkit.plugin.PluginLoadOrder
-
 // For MockBukkit
-import org.bukkit.plugin.java.JavaPluginLoader
-import org.bukkit.plugin.PluginDescriptionFile
 
 /**
- * The entry point to the whole plugin,
- * the manager of the whole plugin lifecycle,
- * the interface to commands from the outside,
- * and the first-stage guard of the configuration schema.
+ * The manager of the internal plugin lifecycle
+ * and the interface to commands
  */
-// Base Information for plugin.yml
-@Plugin(name = "EventHook", version = "0.0-alpha")
-@ApiVersion(ApiVersion.Target.v1_15)
-@Author(value = "ykis-0-0")
-@LogPrefix(value = "EventHook(Test)")
-@LoadOrder(PluginLoadOrder.STARTUP)
-class PluginController : JavaPlugin {
-
-  private val registry: Registry = Registry(this)
-  private val commandDispatcher: CommandDispatcher = CommandDispatcher()
+class PluginController(private val plugin: Plugin, private val registry: Registry) {
+  private val logger = plugin.logger
 
   //#region Internal Lifecycle management
-  private fun announceCommencement(): Boolean {
+  fun announceCommencement(): Boolean {
+    if(this.registry.isLoaded) return false
     val participants = this.registry.processApplications()
 
     this.logger.info("%d handler(s) parsed and registered".format(participants))
@@ -47,13 +28,13 @@ class PluginController : JavaPlugin {
     return true
   }
 
-  private fun endOfEvent(): Boolean {
+  fun endOfEvent(): Boolean {
     this.registry.dismissParticipants()
     return true
   }
   //#endregion
 
-  private fun prepCommand() {
+  fun registerSubcommands(dispatcher: CommandDispatcher) {
     val wrapper: ((CommandSender) -> Boolean).() -> (String) -> (CommandSender, Array<String>) -> Boolean
         = wrapped@ { { callSite@ { sender, args -> // Using _ since we don't need to use the label for now
           if (args.isNotEmpty()) {
@@ -65,7 +46,6 @@ class PluginController : JavaPlugin {
         } } }
 
     val loadAction: (CommandSender) -> Boolean = {
-      this.reloadConfig()
       val result = this.announceCommencement()
 
       it.sendMessage(
@@ -91,40 +71,9 @@ class PluginController : JavaPlugin {
       true
     }
 
-    this.commandDispatcher.register("help", { _: CommandSender -> false }.wrapper())
-    this.commandDispatcher.register("load", loadAction.wrapper())
-    this.commandDispatcher.register("unload", unloadAction.wrapper())
-    this.commandDispatcher.register("reload", reloadAction.wrapper())
-
-    this.getCommand(Constants.COMMAND_NAME)!!.setExecutor(this.commandDispatcher)
+    dispatcher.register("help", { _: CommandSender -> false }.wrapper())
+    dispatcher.register("load", loadAction.wrapper())
+    dispatcher.register("unload", unloadAction.wrapper())
+    dispatcher.register("reload", reloadAction.wrapper())
   }
-
-  //#region External Lifecycle compliance
-  override fun onEnable() {
-    this.logger.info("Enabled!")
-    this.prepCommand()
-
-    // In case for first launch
-    this.dataFolder.mkdir()
-    this.saveResource("config.kts", false)
-
-    val loaded = this.announceCommencement()
-    if(!loaded) {
-      this.logger.severe("Unable to recruit runners, staying idle")
-      return
-    }
-  }
-
-  override fun onDisable() {
-    this.endOfEvent()
-    this.logger.info("Disabled!")
-  }
-  //#endregion
-
-  //#region Constructors for MockBukkit
-  @Suppress("Unused")
-  constructor() : super()
-  @Suppress("Unused")
-  constructor(loader: JavaPluginLoader, description: PluginDescriptionFile, dataFolder: File, file: File) : super(loader, description, dataFolder, file)
-  //#endregion
 }
