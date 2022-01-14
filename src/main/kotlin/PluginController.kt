@@ -5,6 +5,7 @@ package not.here.ykis.eventhook
 
 import org.bukkit.plugin.Plugin
 import org.bukkit.command.CommandSender
+import java.util.function.BiPredicate
 
 // For MockBukkit
 
@@ -35,11 +36,11 @@ class PluginController(private val plugin: Plugin, private val registry: Registr
   //#endregion
 
   fun registerSubcommands(dispatcher: CommandDispatcher) {
-    val wrapper: ((CommandSender) -> Boolean).() -> (String) -> (CommandSender, Array<String>) -> Boolean
-        = wrapped@ { { callSite@ { sender, args -> // Using _ since we don't need to use the label for now
+    val wrapper: ((CommandSender) -> Boolean).() -> (String) -> BiPredicate<CommandSender, Array<String>>
+        = wrapped@ { { BiPredicate{ sender, args -> // Using _ since we don't need to use the label for now
           if (args.isNotEmpty()) {
             sender.sendMessage("Too many arguments")
-            return@callSite false
+            return@BiPredicate false
           }
 
           this@wrapped(sender)
