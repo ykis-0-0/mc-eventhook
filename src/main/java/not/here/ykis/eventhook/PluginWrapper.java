@@ -40,8 +40,10 @@ public class PluginWrapper extends JavaPlugin {
   public void onEnable() {
     //noinspection ConstantConditions
     this.getCommand(Constants.COMMAND_NAME).setExecutor(this.cmdDispatcher);
+
     // Provide an explanation if required
-    this.saveResource("config.kts", false);
+    if(!(new File(this.getDataFolder(), Constants.KTS_FILENAME).exists()))
+      this.saveResource(Constants.KTS_FILENAME, false);
 
     boolean loaded = this.controller.announceCommencement();
     if(!loaded)

@@ -21,6 +21,10 @@ class PluginController(private val plugin: Plugin, private val registry: Registr
     if(this.registry.isLoaded) return false
     val participants = this.registry.processApplications()
 
+    if(participants == 0) {
+      this.logger.info("No handlers parsed into memory")
+      return true
+    }
     this.logger.info("%d handler(s) parsed and registered".format(participants))
 
     this.registry.makeReady()
