@@ -14,12 +14,8 @@ class Registry(private val plugin: Plugin) : Listener {
   val isLoaded: Boolean
     get() = this.theRegister.isNotEmpty()
 
-  // May be able to extract into a standalone ConfigManager if we need to support a multi-file structure
   /**
-   * Create [Athlete]s from a given [Iterable] of [AthleteSpec]
-   *
-   * the `applicationForms` should be a mapping from a `name`
-   * to the applicable parts of the arguments of [Athlete#Athlete][Athlete]
+   * Create [Athlete]s from the specified .kts script file
    *
    * @return total number of entries parsed and constructed
    */
