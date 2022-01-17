@@ -17,6 +17,8 @@ handler<PlayerTeleportEvent>(EventPriority.MONITOR, "scripted") {
   }
 
   script { logger -> // java.util.logging.Logger -> [ServerLoadEvent] -> Unit
+    // CAUTION: Using (System.out.)println() will here will break the formatting
+    //          Use logger if possible
     logger.warning("Steve has teleported!")
   }
 }
@@ -26,7 +28,7 @@ import org.bukkit.event.server.ServerLoadEvent
 
 handler<ServerLoadEvent>(EventPriority.MONITOR, "external") {
   filter { // [ServerLoadEvent] -> Boolean
-    type == ServerLoadEvent.LoadType.STARTUP}
+    type == ServerLoadEvent.LoadType.STARTUP
   }
 
   execute {
