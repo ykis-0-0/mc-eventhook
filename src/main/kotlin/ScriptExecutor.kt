@@ -51,33 +51,4 @@ class ScriptExecutor(
       }
     }
   }
-
-  fun renderResult(maybeResults: ResultWithDiagnostics<EvaluationResult>): List<Pair<Level, String>> = buildList {
-    when(maybeResults) {
-      is ResultWithDiagnostics.Failure ->
-        addP(Level.WARNING, "Script failed to evaluate")
-
-      is ResultWithDiagnostics.Success ->
-        when(val result = maybeResults.value.returnValue) {
-          is ResultValue.Value -> {
-            val returnValue = result.value
-            addP(
-              Level.WARNING,
-              "Script returned a %s: %s".format(
-                returnValue?.javaClass?.name ?: "null", returnValue.toString()
-              )
-            )
-          }
-          is ResultValue.Unit -> Unit
-
-          is ResultValue.Error -> {
-            addP(Level.SEVERE,"Script thrown an Exception:")
-            addP(Level.SEVERE, result.error.stackTraceToString())
-          }
-
-          ResultValue.NotEvaluated ->
-            addP(Level.INFO,"Script is not evaluated")
-        }
-    }
-  }
 }

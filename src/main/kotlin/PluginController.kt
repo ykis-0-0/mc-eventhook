@@ -21,7 +21,10 @@ class PluginController(private val plugin: Plugin, private val registry: Registr
     if(this.registry.isLoaded) return false
     val participants = this.registry.processApplications()
 
-    if(participants == 0) return null
+    when {
+      participants < -1 -> return null
+      participants == 0 -> return true // TODO may need to change in future
+    }
 
     this.registry.makeReady()
     this.logger.info("%d handler(s) parsed, registered and readied".format(participants))

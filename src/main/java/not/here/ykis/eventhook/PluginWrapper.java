@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * The entry point of the whole plugin,
@@ -59,9 +60,14 @@ public class PluginWrapper extends JavaPlugin {
       return;
     }
 
-    //noinspection ConstantConditions
-    boolean loaded = this.controller.announceCommencement();
-    if(!loaded)
+    /*
+      Can't be primitive since it may return null,
+      Can't == true since it's not primitive anymore,
+      Can't .equals() also since it may be null again,
+      *sigh*
+     */
+    Boolean loaded = this.controller.announceCommencement();
+    if(Objects.equals(loaded, false))
       this.getLogger().severe("Unable to recruit runners, staying idle");
   }
 

@@ -64,16 +64,15 @@ class ScriptingProxy(
     val evalResults = this.executor.doEvaluate(compileResults.valueOrThrow())
 
     @Suppress("SpellCheckingInspection")
-    val logMsgs = buildList {
-      addAll(this@ScriptingProxy.executor.renderDiagnostics(evalResults.reports))
-      addAll(this@ScriptingProxy.executor.renderResult(evalResults))
-    }
-
+    val logMsgs = this@ScriptingProxy.executor.renderDiagnostics(evalResults.reports)
     logMsgs.forEach { (level, msg) ->
       this.logger.log(level, msg)
     }
 
-    if(evalResults is ResultWithDiagnostics.Failure) return null
+    if(evalResults is ResultWithDiagnostics.Failure) {
+      this.logger.warning("Script failed to evalutate")
+      return null
+    }
 
     return evalResults.valueOrThrow().returnValue
   }

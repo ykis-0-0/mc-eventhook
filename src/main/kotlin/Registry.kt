@@ -1,6 +1,8 @@
 package not.here.ykis.eventhook
 
 import java.io.File
+import kotlin.script.experimental.api.ResultValue
+import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 
 import org.bukkit.plugin.Plugin
 import org.bukkit.event.Event
@@ -21,10 +23,34 @@ class Registry(private val plugin: Plugin) : Listener {
    */
   fun processApplications(): Int {
     val sourceFile = File(this.plugin.dataFolder, Constants.NAME_KTSFILE)
-    val config = ScriptProxyConfig(returns = mutableSetOf())
+    val host = BasicJvmScriptingHost()
+    val config = ScriptProxyConfig(host, returns = mutableSetOf())
     val proxy = ScriptingProxy(this.plugin.logger, sourceFile)
 
-    proxy.evalFile() ?: return 0
+    with(this.plugin.logger){
+      when(val result = proxy.evalFile()) {
+        is ResultValue.Value -> {
+          val value = result.value
+          warning("Script %s returned a %s: %s".format(
+              sourceFile.name, value?.javaClass?.name ?: "null", value.toString()
+          ))
+          // TODO Maybe further handling here?
+        }
+        is ResultValue.Unit ->
+          info("Script %s finished".format(sourceFile.name))
+        is ResultValue.Error -> {
+          severe("Script %s thrown an Exception:".format(sourceFile.name))
+          severe(result.error.stackTraceToString())
+          return -1
+        }
+        ResultValue.NotEvaluated ->
+          warning("Script %s did not ran".format(sourceFile.name))
+        null -> {
+          severe("Script %s failed to run".format(sourceFile.name))
+          return -1
+        }
+      }
+    }
 
     this.theRegister = config.returns.mapTo(mutableSetOf()) {
       Athlete(plugin, it)
