@@ -171,4 +171,3 @@ class HandlerBuilder<Te: Event>(
 
   val fixture get() = AthleteSpec(this.name, this.eventClass, this.priority, this.predicate, this.executor.callable)
 }
-
