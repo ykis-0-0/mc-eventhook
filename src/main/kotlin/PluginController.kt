@@ -17,18 +17,14 @@ class PluginController(private val plugin: Plugin, private val registry: Registr
   private val logger = plugin.logger
 
   //#region Internal Lifecycle management
-  fun announceCommencement(): Boolean {
+  fun announceCommencement(): Boolean? {
     if(this.registry.isLoaded) return false
     val participants = this.registry.processApplications()
 
-    if(participants == 0) {
-      this.logger.info("No handlers parsed into memory")
-      return true
-    }
-    this.logger.info("%d handler(s) parsed and registered".format(participants))
+    if(participants == 0) return null
 
     this.registry.makeReady()
-    this.logger.info("All runners on their position.")
+    this.logger.info("%d handler(s) parsed, registered and readied".format(participants))
 
     return true
   }
@@ -53,10 +49,11 @@ class PluginController(private val plugin: Plugin, private val registry: Registr
     val loadAction: (CommandSender) -> Boolean = {
       val result = this.announceCommencement()
 
-      it.sendMessage(
-        if(result) "Configuration loaded"
-        else "A loaded configuration already exists"
-      )
+      it.sendMessage(when(result) {
+          true -> "Configuration loaded"
+          false -> "A loaded configuration already exists"
+          null -> "No handlers parsed into memory"
+      })
       true
     }
 

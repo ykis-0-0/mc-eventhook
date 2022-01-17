@@ -26,6 +26,7 @@ public class PluginWrapper extends JavaPlugin {
   private final Registry registry = new Registry(this);
   private final PluginController controller = new PluginController(this, this.registry);
 
+  //#region External Lifecycle compliance
   @Override
   public void onLoad() {
     this.controller.registerSubcommands(this.cmdDispatcher);
@@ -35,16 +36,30 @@ public class PluginWrapper extends JavaPlugin {
     this.getDataFolder().mkdir();
   }
 
-  //#region External Lifecycle compliance
   @Override
   public void onEnable() {
     //noinspection ConstantConditions
     this.getCommand(Constants.COMMAND_NAME).setExecutor(this.cmdDispatcher);
 
     // Provide an explanation if required
-    if(!(new File(this.getDataFolder(), Constants.KTS_FILENAME).exists()))
-      this.saveResource(Constants.KTS_FILENAME, false);
+    if(!(new File(this.getDataFolder(), Constants.NAME_KTSFILE).exists())) {
+      this.saveResource(Constants.NAME_KTSFILE, false);
+      this.getLogger().warning(String.format(
+        "Default %s saved, please check and edit accordingly",
+        Constants.NAME_KTSFILE
+      ));
+    }
 
+    // If suppressor exists skip loading
+    if(new File(this.getDataFolder(), Constants.NAME_HOLDFILE).exists()) {
+      this.getLogger().warning(String.format(
+        "%s found in data folder, suppressing loading of scripts",
+        Constants.NAME_HOLDFILE
+      ));
+      return;
+    }
+
+    //noinspection ConstantConditions
     boolean loaded = this.controller.announceCommencement();
     if(!loaded)
       this.getLogger().severe("Unable to recruit runners, staying idle");
