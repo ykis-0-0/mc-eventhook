@@ -23,7 +23,7 @@ data class ScriptProxyConfig(
   val compile: ScriptCompilationConfiguration = createJvmCompilationConfigurationFromTemplate<ScriptStub> {
     defaultImports(EventPriority::class)//, ScriptClosure::class)
     jvm {
-      compilerOptions("-jvm-target", "16")
+      // compilerOptions("-jvm-target", "16")
       dependenciesFromCurrentContext(wholeClasspath = true)
     }
     implicitReceivers(ScriptClosure::class)
