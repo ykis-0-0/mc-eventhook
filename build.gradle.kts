@@ -21,9 +21,16 @@ repositories {
   maven { url = uri("https://jitpack.io") }
 }
 
-val bundled: Configuration by configurations.creating {
-  this.extendsFrom(configurations.implementation.get())
-  this.isTransitive = false
+val bundled: Configuration by configurations.creating bundled@{
+  isCanBeResolved = false
+  isCanBeConsumed = false
+
+  with(configurations.implementation.get()) impl@{
+    // Make `implementation` config extend this
+    this@impl.extendsFrom(*this@impl.extendsFrom.toTypedArray(), this@bundled)
+  }
+
+  this.isTransitive = true
 }
 
 dependencies {
