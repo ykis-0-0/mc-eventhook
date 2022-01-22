@@ -33,34 +33,39 @@ val bundled: Configuration by configurations.creating bundled@{
   this.isTransitive = true
 }
 
+// Kotlin related
 dependencies {
-  // Start using Kotlin
-  val depKotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-  bundled(depKotlin) {
-    this.isTransitive = true
-  }
-  // its reflection Module
-  // implementation("org.jetbrains.kotlin:kotlin-reflect")
-  // and scripting support
-  implementation("org.jetbrains.kotlin:kotlin-scripting-common")
-  implementation("org.jetbrains.kotlin:kotlin-scripting-jvm")
-  implementation("org.jetbrains.kotlin:kotlin-scripting-jvm-host")
+  val org = "org.jetbrains.kotlin:"
+  bundled(org + "kotlin-stdlib-jdk8")
 
+  // Scripting
+  bundled(org + "kotlin-scripting-common")
+  bundled(org + "kotlin-scripting-jvm")
+  bundled(org + "kotlin-scripting-jvm-host")
+}
+
+// Bukkit
+dependencies {
   // // This dependency is used by the application.
   // implementation("com.google.guava:guava:30.1.1-jre")
 
   // compileOnly("io.papermc.paper:paper-api:1.17-R0.1-SNAPSHOT")
   // compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
   compileOnly("org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT")
+}
 
-  // Add generator for plugin.yml
+// Plugin.yml generation
+dependencies {
   val depAnnotations = "org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT"
   compileOnly(depAnnotations)
   annotationProcessor(depAnnotations)
   // and also in tests
   testCompileOnly(depAnnotations)
   testAnnotationProcessor(depAnnotations)
+}
 
+// Testing
+dependencies {
   // Use MockBukkit and JUnit for testing.
   testImplementation("com.github.seeseemelk:MockBukkit-v1.15:0.3.1-SNAPSHOT")
   testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
