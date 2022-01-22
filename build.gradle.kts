@@ -76,14 +76,23 @@ tasks.test {
   useJUnitPlatform()
 }
 
-java {
-  this.sourceCompatibility = JavaVersion.VERSION_1_8
-  this.targetCompatibility = JavaVersion.VERSION_1_8
+val javaTarget = JavaVersion.VERSION_1_8
+
+if(JavaVersion.current() >= JavaVersion.VERSION_1_9) {
+  tasks.withType<JavaCompile>().configureEach {
+    options.release.set(javaTarget.majorVersion.toInt())
+  }
+} else {
+  java {
+    sourceCompatibility = javaTarget
+    targetCompatibility = javaTarget
+  }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+typealias KotlinCompile = org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+tasks.withType<KotlinCompile>().configureEach {
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = javaTarget.let { (if(it < JavaVersion.VERSION_1_9) "1." else "") + it.majorVersion }
   }
 }
 
