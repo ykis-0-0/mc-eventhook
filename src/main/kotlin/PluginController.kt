@@ -22,7 +22,7 @@ class PluginController(private val plugin: Plugin, private val registry: Registr
     val participants = this.registry.processApplications()
 
     when {
-      participants < -1 -> return null
+      participants < 0 -> return null
       participants == 0 -> return true // TODO may need to change in future
     }
 
