@@ -96,12 +96,14 @@ tasks.withType<KotlinCompile>().configureEach {
   }
 }
 
+base {
+  // Set JAR output directory to /build
+  this.libsDirectory.set(layout.buildDirectory)
+  this.distsDirectory.set(layout.buildDirectory)
+}
+
 tasks.jar {
   from(bundled.asFileTree.files.map { zipTree(it) })
   duplicatesStrategy = DuplicatesStrategy.WARN
 }
 
-base {
-  this.libsDirectory.set(layout.buildDirectory)
-  this.distsDirectory.set(layout.buildDirectory)
-}
