@@ -74,6 +74,11 @@ dependencies {
 tasks.test {
   // Use JUnit Platform for unit tests
   useJUnitPlatform()
+
+  testLogging {
+    showStandardStreams = true
+    showExceptions = true
+  }
 }
 
 val javaTarget = JavaVersion.VERSION_1_8
