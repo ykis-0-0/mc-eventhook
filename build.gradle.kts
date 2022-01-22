@@ -103,7 +103,11 @@ base {
 }
 
 tasks.jar {
-  from(bundled.asFileTree.files.map { zipTree(it) })
+  // pack the whole classpath into the jar
+  from(configurations.runtimeClasspath.map {
+      config -> config.map { if(it.isDirectory) it else zipTree(it) }
+  })
+
   duplicatesStrategy = DuplicatesStrategy.WARN
 }
 
