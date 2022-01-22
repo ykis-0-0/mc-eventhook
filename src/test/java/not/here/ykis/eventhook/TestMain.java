@@ -12,10 +12,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class TestMain {
-  @SuppressWarnings(value = "unused") // It's not time to be a proper warning
   private ServerMock server;
-  @SuppressWarnings(value = "unused") // It's not time to be a proper warning
-  private PluginWrapper plugin;
 
   @BeforeEach
   public void setUp() {
@@ -30,13 +27,13 @@ public class TestMain {
   @Test
   public void testNoScript() throws IOException {
     PluginManagerMock manager = this.server.getPluginManager();
-    this.plugin = (PluginWrapper) manager.loadPlugin(PluginWrapper.class, new Object[0]);
+    PluginWrapper plugin = (PluginWrapper) manager.loadPlugin(PluginWrapper.class, new Object[0]);
 
     @SuppressWarnings("KotlinInternalInJava")
-    File suppressor = new File(this.plugin.getDataFolder(), Constants.NAME_HOLDFILE);
+    File suppressor = new File(plugin.getDataFolder(), Constants.NAME_HOLDFILE);
     //noinspection ResultOfMethodCallIgnored
     suppressor.createNewFile();
 
-    manager.enablePlugin(this.plugin);
+    manager.enablePlugin(plugin);
   }
 }

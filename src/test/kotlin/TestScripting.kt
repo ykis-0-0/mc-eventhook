@@ -6,9 +6,6 @@ import kotlin.script.experimental.api.ResultValue
 
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 
-import not.here.ykis.eventhook.PluginWrapper
-import not.here.ykis.eventhook.ScriptProxyConfig
-import not.here.ykis.eventhook.ScriptingProxy
 import org.junit.jupiter.api.*
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
@@ -41,7 +38,7 @@ class TestScripting {
   @Test
   @Order(1)
   fun testSimpleReturn() {
-    val returnScript = getTestScriptFile<TestScripting>("simple_return.test.kts")
+    val returnScript = getTestScriptFile<TestScripting>("script_load/simple_return.test.kts")
 
     val proxy = ScriptingProxy(logger, returnScript, ScriptProxyConfig(host = this.host))
     proxy.evalFile()
@@ -50,7 +47,7 @@ class TestScripting {
   @Test
   @Order(2)
   fun testPrintAndReturn() {
-    val printScript = getTestScriptFile<TestScripting>("println.test.kts")
+    val printScript = getTestScriptFile<TestScripting>("script_load/println.test.kts")
 
     val proxy = ScriptingProxy(logger, printScript, ScriptProxyConfig(host = this.host))
     proxy.evalFile()
@@ -59,7 +56,7 @@ class TestScripting {
   @Test
   @Order(3)
   fun testInternal() {
-    val internalScript = getTestScriptFile<TestScripting>("internal.test.kts")
+    val internalScript = getTestScriptFile<TestScripting>("script_load/internal.test.kts")
 
     val proxy = ScriptingProxy(logger, internalScript, ScriptProxyConfig(host = this.host))
     val result = proxy.evalFile()
@@ -69,7 +66,7 @@ class TestScripting {
   @Test
   @Order(4)
   fun testExternal() {
-    val externalScript = getTestScriptFile<TestScripting>("external.test.kts")
+    val externalScript = getTestScriptFile<TestScripting>("script_load/external.test.kts")
 
     val proxy = ScriptingProxy(logger, externalScript, ScriptProxyConfig(host = this.host))
     val result = proxy.evalFile()
