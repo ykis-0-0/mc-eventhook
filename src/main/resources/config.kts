@@ -12,6 +12,7 @@ Example 1:
 import org.bukkit.event.player.PlayerTeleportEvent
 
 handler<PlayerTeleportEvent>(EventPriority.MONITOR, "scripted") {
+  // use "filter { true }" is ignore filtering
   filter { // [ServerLoadEvent] -> Boolean
     player.displayName == "Steve"
   }
