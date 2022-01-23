@@ -4,9 +4,7 @@ package not.here.ykis.eventhook
   displayName = "Hooks Configuration",
   // fileExtension = "config.kts", // default kts
 )
-abstract class ScriptStub
-
-class ScriptClosure(
+abstract class ScriptClosure(
   private val exportedAthletes: MutableSet<AthleteSpec<out org.bukkit.event.Event>>
 ) {
 

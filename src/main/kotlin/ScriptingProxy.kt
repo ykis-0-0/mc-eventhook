@@ -3,7 +3,6 @@ package not.here.ykis.eventhook
 import java.util.logging.Logger
 
 import kotlin.script.experimental.api.*
-import kotlin.script.experimental.host.ScriptingHostConfiguration
 import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.host.with
 import kotlin.script.experimental.jvm.baseClassLoader
@@ -26,15 +25,12 @@ internal data class ScriptProxyConfig(
       // compilerOptions("-jvm-target", "16")
       dependenciesFromCurrentContext(wholeClasspath = true)
     }
-    implicitReceivers(ScriptClosure::class)
   },
-  val eval: ScriptEvaluationConfiguration = createJvmEvaluationConfigurationFromTemplate<ScriptStub> {
-    hostConfiguration(defaultJvmScriptingHostConfiguration.with {
-      jvm {
-        baseClassLoader(ScriptProxyConfig::class.java.classLoader)
-      }
-    })
-    implicitReceivers(ScriptClosure(returns))
+  val eval: ScriptEvaluationConfiguration = createJvmEvaluationConfigurationFromTemplate<ScriptClosure> {
+    jvm {
+      baseClassLoader(ScriptProxyConfig::class.java.classLoader)
+    }
+    constructorArgs(returns)
   },
 )
 
