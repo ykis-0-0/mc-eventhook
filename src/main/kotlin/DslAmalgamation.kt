@@ -48,7 +48,7 @@ class ExternalRunner<Te : Event>(name: String) : BaseRunner<Te>(name) {
   override val callable: Handler<Te>
     get() = { logger ->
       val watcherFactory = { level: Level, stream: java.io.InputStream ->
-        LoggingHelper(logger, this@ExternalRunner.listenerName, level, stream)
+        LoggingHelper(SubordinateLogger(logger, this@ExternalRunner.listenerName), level, stream)
       }
 
       // Build callable from exec params
