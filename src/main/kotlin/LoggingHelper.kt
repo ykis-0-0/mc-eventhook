@@ -25,11 +25,11 @@ internal class LoggingHelper internal constructor(
                 this.lineReader.readLine()
             } catch(e: java.io.IOException) {
                 e.printStackTrace()
-                this.logger.severe("=>[%s] Error occurred while relaying program output.".format(this.target))
+                this.logger.severe("=> [%s] Error occurred while relaying program output.".format(this.target))
                 return
             }
             if(thisLine == null || this.shouldStop) break
-            this.logger.log(this.level, "=>[%s] %s".format(this.target, thisLine))
+            this.logger.log(this.level, "=> [%s] %s".format(this.target, thisLine))
         }
     }
 
