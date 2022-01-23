@@ -5,7 +5,7 @@ import java.util.logging.Level
 import kotlin.script.experimental.api.*
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 
-class ScriptExecutor(
+internal class ScriptExecutor(
   private val scriptSource: SourceCode,
   private val compilationConfiguration: ScriptCompilationConfiguration,
   private val evaluationConfiguration: ScriptEvaluationConfiguration,

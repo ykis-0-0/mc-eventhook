@@ -31,7 +31,7 @@ sealed class BaseRunner<Te : Event>(protected val listenerName: String) {
   abstract val callable: Handler<Te>
 }
 
-class ScriptedRunner<Te : Event>(private val block: HandlerParsed<Te>, name: String) : BaseRunner<Te>(name) {
+internal class ScriptedRunner<Te : Event>(private val block: HandlerParsed<Te>, name: String) : BaseRunner<Te>(name) {
   override val callable: Handler<Te>
     get() = { logger ->
       val nestedLogger = SubordinateLogger(logger, this@ScriptedRunner.listenerName);

@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
     usage = "Usage: /<command> <load | unload | reload | help>"
   )
 )
-public class CommandDispatcher implements CommandExecutor {
+class CommandDispatcher implements CommandExecutor {
   private final Map<String, BiPredicate<CommandSender, String[]>> subCommands = new HashMap<>();
 
   @Override

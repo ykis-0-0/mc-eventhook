@@ -3,7 +3,7 @@ package not.here.ykis.eventhook
 import java.util.logging.LogRecord
 import java.util.logging.Logger
 
-class SubordinateLogger(
+internal class SubordinateLogger(
   // private val master: Plugin,
   attachedTo: Logger,
   listenerName: String
@@ -17,6 +17,7 @@ class SubordinateLogger(
 
   override fun log(record: LogRecord) {
     record.message = this.prefix2 + record.message
+    record.loggerName = this.parent.name
     this.parent.log(record)
   }
 }

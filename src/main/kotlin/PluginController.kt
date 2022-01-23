@@ -13,7 +13,7 @@ import java.util.function.BiPredicate
  * The manager of the internal plugin lifecycle
  * and the interface to commands
  */
-class PluginController(private val plugin: Plugin, private val registry: Registry) {
+internal class PluginController(private val plugin: Plugin, private val registry: Registry) {
   private val logger = plugin.logger
 
   //#region Internal Lifecycle management

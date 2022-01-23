@@ -17,11 +17,11 @@ import kotlin.script.experimental.jvmhost.createJvmEvaluationConfigurationFromTe
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 
-data class ScriptProxyConfig(
+internal data class ScriptProxyConfig(
   val host: BasicJvmScriptingHost = BasicJvmScriptingHost(),
   val returns: MutableSet<AthleteSpec<out Event>> = mutableSetOf(),
-  val compile: ScriptCompilationConfiguration = createJvmCompilationConfigurationFromTemplate<ScriptStub> {
-    defaultImports(EventPriority::class)//, ScriptClosure::class)
+  val compile: ScriptCompilationConfiguration = createJvmCompilationConfigurationFromTemplate<ScriptClosure> {
+    defaultImports(EventPriority::class)
     jvm {
       // compilerOptions("-jvm-target", "16")
       dependenciesFromCurrentContext(wholeClasspath = true)
@@ -38,7 +38,7 @@ data class ScriptProxyConfig(
   },
 )
 
-class ScriptingProxy(
+internal class ScriptingProxy(
   private val logger: Logger,
   private val scriptSource: SourceCode,
   config: ScriptProxyConfig
