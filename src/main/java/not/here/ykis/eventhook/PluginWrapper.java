@@ -20,7 +20,7 @@ import java.util.Objects;
 @Plugin(name = "EventHook", version = "0.0-alpha")
 @ApiVersion(ApiVersion.Target.v1_15)
 @Author(value = "ykis-0-0")
-@LogPrefix(value = "EventHook(Test)")
+@LogPrefix(value = Constants.LOG_PREFIX)
 @LoadOrder(PluginLoadOrder.STARTUP)
 public class PluginWrapper extends JavaPlugin {
   private final CommandDispatcher cmdDispatcher = new CommandDispatcher();
