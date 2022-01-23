@@ -1,6 +1,5 @@
 package not.here.ykis.eventhook
 
-import java.io.File
 import java.nio.file.Paths
 import java.util.*
 import kotlin.script.experimental.api.ResultValue
@@ -19,46 +18,81 @@ import org.bukkit.event.Event
 class TestHandlers {
   private var server: ServerMock? = null
   private var plugin: PluginWrapper? = null
+
   private val host = BasicJvmScriptingHost()
+
+  private val plmgr get() = this.server!!.pluginManager
+  private val logger get() = this.plugin!!.logger
+
   @BeforeEach
   fun setUp() {
-    server = MockBukkit.mock()
+    val srv = MockBukkit.mock()
+    this.server = srv
+    this.plugin = srv.pluginManager.loadPlugin(PluginWrapper::class.java, arrayOf()) as PluginWrapper
   }
 
   @AfterEach
   fun tearDown() {
-    plugin = null
+    this.plugin = null
+
     MockBukkit.unmock()
-    server = null
+    this.server = null
+  }
+
+  private fun getScriptFile(path: String) = Paths.get(
+    Objects.requireNonNull(
+      this.javaClass.classLoader.getResource(path)
+    ).toURI()
+  ).toFile()
+
+  private fun getSet(): MutableSet<AthleteSpec<out Event>> = mutableSetOf()
+
+
+  private companion object {
+
+    @JvmStatic
+    private fun assertGoodScript(resultVal: ResultValue?) {
+      Assertions.assertNotNull(resultVal)
+      Assertions.assertFalse(resultVal is ResultValue.NotEvaluated)
+      Assertions.assertFalse(resultVal is ResultValue.Error)
+    }
   }
 
   @Test
-  fun testLogger() {
-    this.plugin = this.server!!.pluginManager.loadPlugin(PluginWrapper::class.java, arrayOf()) as PluginWrapper
+  fun testLoggerInternal() {
+    val scriptFile = getScriptFile("internal.test.kts")
 
-    val scriptFile = Paths.get(
-      Objects.requireNonNull(
-        this.javaClass.classLoader.getResource("script_handlers/logger.test.kts")
-      ).toURI()
-    ).toFile()
-
-    val returns = HashSet<AthleteSpec<out Event>>()
-    val config = ScriptProxyConfig(
-      this.host,
-      returns = returns
-    )
-    val proxy = ScriptingProxy(plugin!!.logger, scriptFile, config)
+    val returns = this.getSet()
+    val proxy = ScriptingProxy(this.logger, scriptFile, ScriptProxyConfig(host, returns = returns))
 
     val resultValue = proxy.evalFile()
-    Assertions.assertFalse(resultValue is ResultValue.NotEvaluated)
-    Assertions.assertFalse(resultValue is ResultValue.Error)
+    Companion.assertGoodScript(resultValue)
 
     Assertions.assertNotEquals(0, returns.size)
-    for((_, _, _, _, closure) in returns) {
+    for(spec in returns) {
       // Simplified Assumptions
-      val aa = closure(plugin!!.logger)
       @Suppress("UNCHECKED_CAST")
-      (aa as (DummyEvent) -> Unit)(DummyEvent())
+      val handler = spec.closure(this.logger) as (DummyEvent) -> Unit
+      handler(DummyEvent())
+    }
+  }
+
+  @Test
+  fun testLoggerExternal() {
+    val scriptFile = getScriptFile("external.test.kts")
+
+    val returns = this.getSet()
+    val proxy = ScriptingProxy(this.logger, scriptFile, ScriptProxyConfig(host, returns = returns))
+
+    val resultValue = proxy.evalFile()
+    Companion.assertGoodScript(resultValue)
+
+    Assertions.assertNotEquals(0, returns.size)
+    for(spec in returns) {
+      // Simplified Assumptions
+      @Suppress("UNCHECKED_CAST")
+      val handler = spec.closure(this.logger) as (DummyEvent) -> Unit
+      handler(DummyEvent())
     }
   }
 }

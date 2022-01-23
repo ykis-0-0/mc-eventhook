@@ -16,4 +16,12 @@ public class DummyEvent extends Event {
     return handlers;
   }
 
+  public boolean getNegative() {
+    return false;
+  }
+
+  public boolean getPositive() {
+    return true;
+  }
+
 }
