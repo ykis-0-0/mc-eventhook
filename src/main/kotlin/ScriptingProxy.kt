@@ -41,7 +41,7 @@ data class ScriptProxyConfig(
 class ScriptingProxy(
   private val logger: Logger,
   private val scriptSource: SourceCode,
-  config: ScriptProxyConfig = ScriptProxyConfig()
+  config: ScriptProxyConfig
 ) {
   constructor(logger: Logger, sourcePath: java.io.File, config: ScriptProxyConfig = ScriptProxyConfig()): this(logger, sourcePath.toScriptSource(), config)
 

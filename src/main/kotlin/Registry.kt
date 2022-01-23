@@ -25,7 +25,7 @@ class Registry(private val plugin: Plugin) : Listener {
     val sourceFile = File(this.plugin.dataFolder, Constants.NAME_KTSFILE)
     val host = BasicJvmScriptingHost()
     val config = ScriptProxyConfig(host, returns = mutableSetOf())
-    val proxy = ScriptingProxy(this.plugin.logger, sourceFile)
+    val proxy = ScriptingProxy(this.plugin.logger, sourceFile, config)
 
     with(this.plugin.logger){
       when(val result = proxy.evalFile()) {
