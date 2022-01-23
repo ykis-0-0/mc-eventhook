@@ -30,11 +30,11 @@ public class PluginWrapper extends JavaPlugin {
   //#region External Lifecycle compliance
   @Override
   public void onLoad() {
-    this.controller.registerSubcommands(this.cmdDispatcher);
-
     // In case for first launch
     //noinspection ResultOfMethodCallIgnored
     this.getDataFolder().mkdir();
+
+    this.controller.registerSubcommands(this.cmdDispatcher);
   }
 
   @Override
