@@ -66,7 +66,7 @@ class TestHandlers {
     val proxy = ScriptingProxy(this.logger, scriptFile, ScriptProxyConfig(host, returns = returns))
 
     val resultValue = proxy.evalFile()
-    Companion.assertGoodScript(resultValue)
+    TestHandlers.Companion.assertGoodScript(resultValue)
 
     Assertions.assertNotEquals(0, returns.size)
     for(spec in returns) {
@@ -85,7 +85,7 @@ class TestHandlers {
     val proxy = ScriptingProxy(this.logger, scriptFile, ScriptProxyConfig(host, returns = returns))
 
     val resultValue = proxy.evalFile()
-    Companion.assertGoodScript(resultValue)
+    TestHandlers.Companion.assertGoodScript(resultValue)
 
     Assertions.assertNotEquals(0, returns.size)
     for(spec in returns) {
