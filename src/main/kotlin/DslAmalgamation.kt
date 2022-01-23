@@ -34,19 +34,7 @@ sealed class BaseRunner<Te : Event>(protected val listenerName: String) {
 class ScriptedRunner<Te : Event>(private val block: HandlerParsed<Te>, name: String) : BaseRunner<Te>(name) {
   override val callable: Handler<Te>
     get() = { logger ->
-      val nestedLogger = object: Logger(null, null) {
-        private val prefix = "=> [%s]".format(this@ScriptedRunner.listenerName)
-
-        init {
-          this.parent = logger
-          this.level = Level.ALL
-        }
-
-        override fun log(record: java.util.logging.LogRecord) {
-          record.message = prefix + record.message
-          super.log(record)
-        }
-      }
+      val nestedLogger = SubordinateLogger(logger, this@ScriptedRunner.listenerName);
 
       { this@ScriptedRunner.block.invoke(it, nestedLogger) }
     }
