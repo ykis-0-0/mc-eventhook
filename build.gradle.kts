@@ -64,6 +64,14 @@ dependencies {
   testAnnotationProcessor(depAnnotations)
 }
 
+/*
+// A helper annotation for making Warnings
+dependencies {
+  compileOnly("com.pushtorefresh:javac-warning-annotation:1.0.0")
+  annotationProcessor("com.pushtorefresh:javac-warning-annotation:1.0.0")
+}
+*/
+
 // Testing
 dependencies {
   // Use MockBukkit and JUnit for testing.
