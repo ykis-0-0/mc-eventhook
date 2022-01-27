@@ -68,4 +68,6 @@ class Registry(private val plugin: Plugin) : Listener {
     this.theRegister.clear()
   }
 
+  fun rollCall() = this.theRegister.map { it.toString() }
+
 }

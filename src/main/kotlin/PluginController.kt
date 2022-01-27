@@ -76,9 +76,16 @@ internal class PluginController(private val plugin: Plugin, private val registry
       true
     }
 
+    val listAction: (CommandSender) -> Boolean = {
+      val msg = "Runners loaded:\n" + this.registry.rollCall().joinToString("\n")
+      it.sendMessage(msg)
+      true
+    }
+
     dispatcher.register("help", { _: CommandSender -> false }.wrapper())
     dispatcher.register("load", loadAction.wrapper())
     dispatcher.register("unload", unloadAction.wrapper())
     dispatcher.register("reload", reloadAction.wrapper())
+    dispatcher.register("list", listAction.wrapper())
   }
 }
