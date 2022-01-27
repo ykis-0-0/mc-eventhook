@@ -9,6 +9,7 @@
 plugins {
   java
   id("org.jetbrains.kotlin.jvm") version "1.6.10"
+  id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 repositories {
@@ -115,12 +116,52 @@ base {
   this.distsDirectory.set(layout.buildDirectory)
 }
 
-tasks.jar {
-  // pack the whole classpath into the jar
+/**/
+
+// TODO Not Working
+// include as individual jars in .jar/libs/
+val jarInJar by tasks.registering(Jar::class) {
+  from(sourceSets.main.get().output)
+
+  val libDir = "libs"
+
+  manifest {
+    attributes(
+      "Class-Path" to "EventHook/$libDir/*"
+    )
+  }
+
+  into(libDir) {
+    from(*configurations.runtimeClasspath.get().files.toTypedArray())
+  }
+
+  archiveClassifier.set("nested")
+}
+
+// TODO The only format which seems to work
+// pack the whole classpath into the jar
+val messyJar by tasks.registering(Jar::class) {
+  from(sourceSets.main.get().output)
+
   from(configurations.runtimeClasspath.map {
       config -> config.map { if(it.isDirectory) it else zipTree(it) }
   })
 
+  archiveClassifier.set("amalgamated")
+
   duplicatesStrategy = DuplicatesStrategy.WARN
 }
 
+// TODO NOT WORKING
+tasks.shadowJar {
+  archiveClassifier.set("bundled")
+  minimize()
+  // dependsOn(relocation)
+}
+
+// TODO WILL NOT WORK
+tasks.jar {
+  tasks.assemble.get().dependsOn(jarInJar, messyJar, tasks.shadowJar)
+
+  archiveClassifier.set("bare")
+}
