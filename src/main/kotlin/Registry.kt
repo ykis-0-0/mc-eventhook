@@ -1,65 +1,71 @@
 package not.here.ykis.eventhook
 
-import org.bukkit.plugin.Plugin
+import java.io.File
+import kotlin.script.experimental.api.ResultValue
+import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 
-import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.plugin.Plugin
 import org.bukkit.event.Event
-import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 
-import java.io.File
-import java.util.ArrayList
+/** The registry, as its name suggests, builds, keeps record of and (de)registers individual [Athlete]s  */
+class Registry(private val plugin: Plugin) : Listener {
 
-/** The registry, as its name suggests, builds, keeps record of and deregisters individual [Athlete]s  */
-internal class Registry(private val plugin: Plugin) : Listener {
+  private var theRegister: MutableSet<Athlete<*>> = mutableSetOf()
+  val isLoaded: Boolean
+    get() = this.theRegister.isNotEmpty()
 
-  private val theRegister: ArrayList<Athlete> = ArrayList()
-
-  // REVIEW: This thing will be redone in kotlin anyway lol
   /**
-   * Create [Athlete]s from a given [ConfigurationSection]
+   * Create [Athlete]s from the specified .kts script file
    *
-   * the `applicationForms` should be a mapping from a `name`
-   * to the applicable parts of the arguments of [Athlete#Athlete][Athlete]
-   *
-   * @param applicationForms the relevant section of configuration
    * @return total number of entries parsed and constructed
    */
-  fun processApplications(applicationForms: ConfigurationSection): Int {
-    for (applicantName in applicationForms.getKeys(false)) {
-      val application = applicationForms.getConfigurationSection(applicantName)!!
-      val reader = ConfigHelper(plugin, application, applicantName)
-      val eventClass: Class<out Event?>
-      val eventPriority: EventPriority
-      val execPath: String
-      val workDir: File?
-      val announce: Boolean
-      val execArgs: List<String>
-      try {
-        eventClass = reader.event
-        eventPriority = reader.priority
-        execPath = reader.execPath
-        workDir = reader.workDir
-        announce = reader.announce
-        execArgs = reader.args
-      } catch (e: RuntimeException) {
-        with(this.plugin.logger) {
-          severe("In config.yml[%s.%s]: %s".format(
-            Constants.RUNNERS_CONTAINER, applicantName, e.message
+  fun processApplications(): Int {
+    val sourceFile = File(this.plugin.dataFolder, Constants.NAME_KTSFILE)
+    val host = BasicJvmScriptingHost()
+    val config = ScriptProxyConfig(host, returns = mutableSetOf())
+    val proxy = ScriptingProxy(this.plugin.logger, sourceFile, config)
+
+    with(this.plugin.logger){
+      when(val result = proxy.evalFile()) {
+        is ResultValue.Value -> {
+          val value = result.value
+          warning("Script %s returned a %s: %s".format(
+              sourceFile.name, value?.javaClass?.name ?: "null", value.toString()
           ))
-          warning("Entry Skipped")
+          // TODO Maybe further handling here?
         }
-        continue
+        is ResultValue.Unit ->
+          info("Script %s finished".format(sourceFile.name))
+        is ResultValue.Error -> {
+          severe("Script %s thrown an Exception:".format(sourceFile.name))
+          severe(result.error.stackTraceToString())
+          return -1
+        }
+        ResultValue.NotEvaluated ->
+          warning("Script %s did not ran".format(sourceFile.name))
+        null -> {
+          severe("Script %s failed to run".format(sourceFile.name))
+          return -1
+        }
       }
-      theRegister.add(Athlete(plugin, applicantName, eventClass, eventPriority, execPath, workDir, announce, execArgs))
     }
-    return theRegister.size
+
+    this.theRegister = config.returns.mapTo(mutableSetOf()) {
+      Athlete(plugin, it)
+    }
+
+    return this.theRegister.size
   }
 
   /** Make each of the recorded [Athlete]s ready and register themselves to their corresponding [Event]s */
   fun makeReady() = theRegister.forEach { athlete -> athlete.onMyMark(this) }
 
   /** Centrally Unregisters all of the [Athlete]s from all of the [Event]s  */
-  fun dismissParticipants() = HandlerList.unregisterAll(this)
+  fun dismissParticipants() {
+    HandlerList.unregisterAll(this)
+    this.theRegister.clear()
+  }
+
 }
