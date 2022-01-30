@@ -161,7 +161,9 @@ tasks.shadowJar {
 
 // TODO WILL NOT WORK
 tasks.jar {
-  tasks.assemble.get().dependsOn(jarInJar, messyJar, tasks.shadowJar)
-
   archiveClassifier.set("bare")
+}
+
+tasks.assemble {
+  this.dependsOn(jarInJar, messyJar, tasks.shadowJar) // tasks.jar already in depended
 }
