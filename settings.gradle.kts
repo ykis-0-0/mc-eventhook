@@ -8,6 +8,7 @@
  */
 
 rootProject.name = "mc-eventhook"
+
 /*
 sourceControl {
   gitRepository(uri("https://hub.spigotmc.org/stash/scm/spigot/plugin-annotations.git")) {

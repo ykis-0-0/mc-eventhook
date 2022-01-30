@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.plugin.java.annotation.plugin.*;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
+import org.bukkit.plugin.java.annotation.dependency.Library;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -22,6 +23,8 @@ import java.util.Objects;
 @Author(value = "ykis-0-0")
 @LogPrefix(value = Constants.LOG_PREFIX)
 @LoadOrder(PluginLoadOrder.STARTUP)
+@Library("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10")
+@Library("org.jetbrains.kotlin:kotlin-scripting-jvm-host:1.6.10")
 public class PluginWrapper extends JavaPlugin {
   private final CommandDispatcher cmdDispatcher = new CommandDispatcher();
   private final Registry registry = new Registry(this);
