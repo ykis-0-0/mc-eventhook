@@ -3,18 +3,36 @@ package not.here.ykis.eventhook
 import java.util.logging.Logger
 
 import kotlin.script.experimental.api.*
+import kotlin.script.experimental.host.createCompilationConfigurationFromTemplate
+import kotlin.script.experimental.host.createEvaluationConfigurationFromTemplate
 import kotlin.script.experimental.host.toScriptSource
-import kotlin.script.experimental.host.with
-import kotlin.script.experimental.jvm.baseClassLoader
-import kotlin.script.experimental.jvm.defaultJvmScriptingHostConfiguration
-import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
-import kotlin.script.experimental.jvm.jvm
+import kotlin.script.experimental.jvm.*
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
-import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
-import kotlin.script.experimental.jvmhost.createJvmEvaluationConfigurationFromTemplate
 
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
+
+//#region Overrides
+
+private inline fun <reified T : Any> createJvmCompilationConfigurationFromTemplate(
+  noinline body: ScriptCompilationConfiguration.Builder.() -> Unit = {}
+): ScriptCompilationConfiguration = createCompilationConfigurationFromTemplate(
+  KotlinType(T::class),
+  defaultJvmScriptingHostConfiguration,
+  T::class,
+  body
+)
+
+private inline fun <reified T : Any> createJvmEvaluationConfigurationFromTemplate(
+  noinline body: ScriptEvaluationConfiguration.Builder.() -> Unit = {}
+): ScriptEvaluationConfiguration = createEvaluationConfigurationFromTemplate(
+  KotlinType(T::class),
+  defaultJvmScriptingHostConfiguration,
+  T::class,
+  body
+)
+
+//#endregion
 
 internal data class ScriptProxyConfig(
   val host: BasicJvmScriptingHost = BasicJvmScriptingHost(),
@@ -23,7 +41,7 @@ internal data class ScriptProxyConfig(
     defaultImports(EventPriority::class)
     jvm {
       // compilerOptions("-jvm-target", "16")
-      dependenciesFromCurrentContext(wholeClasspath = true)
+      dependenciesFromClassloader(classLoader = PluginWrapper::class.java.classLoader, wholeClasspath = true)
     }
   },
   val eval: ScriptEvaluationConfiguration = createJvmEvaluationConfigurationFromTemplate<ScriptClosure> {
