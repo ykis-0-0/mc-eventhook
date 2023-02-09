@@ -34,15 +34,15 @@ val bundled: Configuration by configurations.creating bundled@{
   this.isTransitive = true
 }
 
-// Kotlin related
 dependencies {
-  val org = "org.jetbrains.kotlin:"
-  bundled(org + "kotlin-stdlib-jdk8")
 
-  // Scripting
-  bundled(org + "kotlin-scripting-common")
-  bundled(org + "kotlin-scripting-jvm")
-  bundled(org + "kotlin-scripting-jvm-host")
+  //region Kotlin & Scripting support
+  val fromKotlin = "org.jetbrains.kotlin:"
+  bundled(fromKotlin, "kotlin-stdlib-jdk8")
+  bundled(fromKotlin, "kotlin-scripting-common")
+  bundled(fromKotlin, "kotlin-scripting-jvm")
+  bundled(fromKotlin, "kotlin-scripting-jvm-host")
+  //endregion
 }
 
 // Bukkit
