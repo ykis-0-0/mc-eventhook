@@ -55,14 +55,17 @@ dependencies {
   compileOnly("org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT")
 }
 
-// Plugin.yml generation
 dependencies {
-  val depAnnotations = "org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT"
-  compileOnly(depAnnotations)
-  annotationProcessor(depAnnotations)
-  // and also in tests
-  testCompileOnly(depAnnotations)
-  testAnnotationProcessor(depAnnotations)
+  //region Plugin.yml generation
+  val ymlAnnotations = create("org.spigotmc", "plugin-annotations", "1.2.3-SNAPSHOT")
+  ymlAnnotations.let {
+    compileOnly(it)
+    annotationProcessor(it)
+    // and also in tests
+    testCompileOnly(it)
+    testAnnotationProcessor(it)
+  }
+  //endregion
 }
 
 /*
