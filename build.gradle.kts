@@ -44,10 +44,8 @@ val delegated: Configuration by configurations.creating delegated@{
   isCanBeResolved = false
   isCanBeConsumed = false
 
-  with(configurations.implementation.get()) impl@{
-    // Make `implementation` config extend this
-    this@impl.extendsFrom(*this@impl.extendsFrom.toTypedArray(), this@delegated)
-  }
+  // Make `implementation` config extend this
+  configurations.implementation.get().extendsFrom(this@delegated)
 
   this.isTransitive = true
 }
