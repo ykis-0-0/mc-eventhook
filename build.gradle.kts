@@ -43,17 +43,13 @@ dependencies {
   bundled(fromKotlin, "kotlin-scripting-jvm")
   bundled(fromKotlin, "kotlin-scripting-jvm-host")
   //endregion
-}
 
-dependencies {
   //region Bukkit
   // compileOnly("io.papermc.paper", "paper-api", "1.17-R0.1-SNAPSHOT")
   // compileOnly("org.spigotmc", "spigot-api", "1.16.5-R0.1-SNAPSHOT")
   compileOnly("org.bukkit", "bukkit", "1.15.2-R0.1-SNAPSHOT")
   //endregion
-}
 
-dependencies {
   //region Plugin.yml generation
   val ymlAnnotations = create("org.spigotmc", "plugin-annotations", "1.2.3-SNAPSHOT")
   ymlAnnotations.let {
@@ -64,18 +60,14 @@ dependencies {
     testAnnotationProcessor(it)
   }
   //endregion
-}
 
-dependencies {
   //region A helper annotation for making Warnings
   /*
   compileOnly("com.pushtorefresh:javac-warning-annotation:1.0.0")
   annotationProcessor("com.pushtorefresh:javac-warning-annotation:1.0.0")
   */
   //endregion
-}
 
-dependencies {
   //region Testing
 
   // Use MockBukkit and JUnit for testing.
