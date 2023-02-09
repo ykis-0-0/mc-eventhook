@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
@@ -17,7 +18,7 @@ import java.util.*
 
 plugins {
   java
-  id("org.jetbrains.kotlin.jvm") version "1.6.10"
+  id("org.jetbrains.kotlin.jvm") version "1.8.0"
   id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -108,8 +109,9 @@ if(JavaVersion.current() >= JavaVersion.VERSION_1_9) {
 }
 
 tasks.withType<KotlinCompile>().configureEach {
-  kotlinOptions {
-    jvmTarget = javaTarget.let { (if(it < JavaVersion.VERSION_1_9) "1." else "") + it.majorVersion }
+  compilerOptions {
+    val jvmUsed = javaTarget.let { (if(it < JavaVersion.VERSION_1_9) "1." else "") + it.majorVersion }
+    jvmTarget.set(JvmTarget.fromTarget(jvmUsed))
   }
 }
 //endregion
