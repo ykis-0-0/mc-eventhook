@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
 import java.io.FileInputStream
@@ -116,7 +117,6 @@ if(JavaVersion.current() >= JavaVersion.VERSION_1_9) {
   }
 }
 
-typealias KotlinCompile = org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 tasks.withType<KotlinCompile>().configureEach {
   kotlinOptions {
     jvmTarget = javaTarget.let { (if(it < JavaVersion.VERSION_1_9) "1." else "") + it.majorVersion }
