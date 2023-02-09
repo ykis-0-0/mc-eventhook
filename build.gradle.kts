@@ -16,10 +16,11 @@ repositories {
   // Use Maven Central for resolving dependencies.
   mavenCentral()
 
-  maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
+  // Bukkit APIs
+  maven("https://papermc.io/repo/repository/maven-public/")
+  // MockBukkit
+  maven("https://jitpack.io")
 
-  // For MockBukkit
-  maven { url = uri("https://jitpack.io") }
 }
 
 val bundled: Configuration by configurations.creating bundled@{
@@ -86,6 +87,7 @@ tasks.test {
   }
 }
 
+//region Configure Java version target
 val javaTarget = JavaVersion.VERSION_1_8
 
 if(JavaVersion.current() >= JavaVersion.VERSION_1_9) {
@@ -105,6 +107,7 @@ tasks.withType<KotlinCompile>().configureEach {
     jvmTarget = javaTarget.let { (if(it < JavaVersion.VERSION_1_9) "1." else "") + it.majorVersion }
   }
 }
+//endregion
 
 base {
   // Set JAR output directory to /build
