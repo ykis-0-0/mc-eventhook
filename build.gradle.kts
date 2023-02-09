@@ -34,50 +34,46 @@ val bundled: Configuration by configurations.creating bundled@{
   this.isTransitive = true
 }
 
-// Kotlin related
 dependencies {
-  val org = "org.jetbrains.kotlin:"
-  bundled(org + "kotlin-stdlib-jdk8")
 
-  // Scripting
-  bundled(org + "kotlin-scripting-common")
-  bundled(org + "kotlin-scripting-jvm")
-  bundled(org + "kotlin-scripting-jvm-host")
-}
+  //region Kotlin & Scripting support
+  val fromKotlin = "org.jetbrains.kotlin:"
+  bundled(fromKotlin, "kotlin-stdlib-jdk8")
+  bundled(fromKotlin, "kotlin-scripting-common")
+  bundled(fromKotlin, "kotlin-scripting-jvm")
+  bundled(fromKotlin, "kotlin-scripting-jvm-host")
+  //endregion
 
-// Bukkit
-dependencies {
-  // // This dependency is used by the application.
-  // implementation("com.google.guava:guava:30.1.1-jre")
+  //region Bukkit
+  // compileOnly("io.papermc.paper", "paper-api", "1.17-R0.1-SNAPSHOT")
+  // compileOnly("org.spigotmc", "spigot-api", "1.16.5-R0.1-SNAPSHOT")
+  compileOnly("org.bukkit", "bukkit", "1.15.2-R0.1-SNAPSHOT")
+  //endregion
 
-  // compileOnly("io.papermc.paper:paper-api:1.17-R0.1-SNAPSHOT")
-  // compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
-  compileOnly("org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT")
-}
+  //region Plugin.yml generation
+  val ymlAnnotations = create("org.spigotmc", "plugin-annotations", "1.2.3-SNAPSHOT")
+  ymlAnnotations.let {
+    compileOnly(it)
+    annotationProcessor(it)
+    // and also in tests
+    testCompileOnly(it)
+    testAnnotationProcessor(it)
+  }
+  //endregion
 
-// Plugin.yml generation
-dependencies {
-  val depAnnotations = "org.spigotmc:plugin-annotations:1.2.3-SNAPSHOT"
-  compileOnly(depAnnotations)
-  annotationProcessor(depAnnotations)
-  // and also in tests
-  testCompileOnly(depAnnotations)
-  testAnnotationProcessor(depAnnotations)
-}
-
-/*
-// A helper annotation for making Warnings
-dependencies {
+  //region A helper annotation for making Warnings
+  /*
   compileOnly("com.pushtorefresh:javac-warning-annotation:1.0.0")
   annotationProcessor("com.pushtorefresh:javac-warning-annotation:1.0.0")
-}
-*/
+  */
+  //endregion
 
-// Testing
-dependencies {
+  //region Testing
+
   // Use MockBukkit and JUnit for testing.
   testImplementation("com.github.seeseemelk:MockBukkit-v1.15:0.3.1-SNAPSHOT")
   testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+  //endregion
 }
 
 tasks.test {
