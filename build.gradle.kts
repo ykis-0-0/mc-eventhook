@@ -93,16 +93,6 @@ dependencies {
   //endregion
 }
 
-tasks.test {
-  // Use JUnit Platform for unit tests
-  useJUnitPlatform()
-
-  testLogging {
-    showStandardStreams = true
-    showExceptions = true
-  }
-}
-
 //region Configure Java version target
 val javaTarget = JavaVersion.VERSION_1_8
 
@@ -174,6 +164,16 @@ tasks.compileJava {
         yamlHandler.dump(it, here)
       }
     }
+  }
+}
+
+tasks.test {
+  // Use JUnit Platform for unit tests
+  useJUnitPlatform()
+
+  testLogging {
+    showStandardStreams = true
+    showExceptions = true
   }
 }
 
