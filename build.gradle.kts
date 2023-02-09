@@ -61,9 +61,9 @@ dependencies {
   //endregion
 
   //region Bukkit
-  // compileOnly("io.papermc.paper", "paper-api", "1.17-R0.1-SNAPSHOT")
-  // compileOnly("org.spigotmc", "spigot-api", "1.16.5-R0.1-SNAPSHOT")
   compileOnly("org.bukkit", "bukkit", "1.15.2-R0.1-SNAPSHOT")
+  // compileOnly("org.spigotmc", "spigot-api", "1.16.5-R0.1-SNAPSHOT")
+  // compileOnly("io.papermc.paper", "paper-api", "1.17-R0.1-SNAPSHOT")
   //endregion
 
   //region Plugin.yml generation
@@ -85,10 +85,9 @@ dependencies {
   //endregion
 
   //region Testing
-
   // Use MockBukkit and JUnit for testing.
-  testImplementation("com.github.seeseemelk:MockBukkit-v1.15:0.3.1-SNAPSHOT")
   testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+  testImplementation("com.github.seeseemelk:MockBukkit-v1.15:0.3.1-SNAPSHOT")
   //endregion
 }
 
@@ -147,9 +146,13 @@ tasks.compileJava {
       }
 
       appendLine("# Auto-generated plugin.yml,")
+
       append("# generated at ")
       appendLine(dtString)
-      appendLine("# by org.bukkit.plugin.java.annotation.PluginAnnotationProcessor") // See if the FQ class name changes :) fuck
+
+      // See if the FQ class name changes :) fuck
+      appendLine("# by org.bukkit.plugin.java.annotation.PluginAnnotationProcessor")
+
     }
 
     updatedYaml.let {
